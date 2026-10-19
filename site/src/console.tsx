@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import {
   RiAddLine,
   RiArrowUpLine,
@@ -68,6 +68,16 @@ const RUNS = [
   { id: "r-9918", agent: "Support triage", status: "Handed to a person", color: "neutral", region: "eu-central-1", time: "52 s" },
 ] as const;
 
+const ANSWER =
+  "Three escalations need a decision. Orders #88213 and #88190 qualify for a full refund under policy v7. Order #87954 is outside the 30 day window, so I drafted a reply offering store credit instead.";
+
+const PROMPTS = [
+  "Ask about tickets, orders or policies",
+  "Which refunds are waiting for approval?",
+  "Summarize today's escalations",
+  "Draft a reply to ticket #4821",
+];
+
 /** Played once on load, then on demand. Reduced motion lands on the result. */
 function useRun(onRunningChange: (running: boolean) => void) {
   const [step, setStep] = useState(() =>
@@ -88,6 +98,15 @@ function useRun(onRunningChange: (running: boolean) => void) {
 function AgentRun({ onRunningChange }: { onRunningChange: (running: boolean) => void }) {
   const { step, running, restart } = useRun(onRunningChange);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [prompt, setPrompt] = useState(0);
+
+  // Reverse UI's text cycler on the empty composer: example asks, every few seconds.
+  useEffect(() => {
+    if (draft || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => setPrompt((p) => (p + 1) % PROMPTS.length), 3200);
+    return () => window.clearInterval(id);
+  }, [draft]);
 
   return (
     <section
@@ -98,7 +117,13 @@ function AgentRun({ onRunningChange }: { onRunningChange: (running: boolean) => 
         <div className="flex items-center gap-3">
           <img src="/mark.png" alt="" className={cx("size-6", running && "mark-spin")} />
           <div className="flex flex-col">
-            <h3 className="text-body-medium text-text-primary">Support triage agent</h3>
+            <h3 className="flex items-center gap-2 text-body-medium text-text-primary">
+              Support triage agent
+              <span className="relative flex size-2" aria-label="Online">
+                <span className="absolute inset-0 animate-ping rounded-full bg-accent-500 opacity-60 motion-reduce:animate-none" />
+                <span className="relative size-2 rounded-full bg-accent-500" />
+              </span>
+            </h3>
             <p className="text-caption-1-medium text-text-tertiary">v14, Llama 3.3 70B on your GPUs</p>
           </div>
         </div>
@@ -135,9 +160,10 @@ function AgentRun({ onRunningChange }: { onRunningChange: (running: boolean) => 
 
         {!running && (
           <div className="enter flex flex-col gap-3">
-            <p className="text-body-regular text-text-primary">
-              Three escalations need a decision. Orders #88213 and #88190 qualify for a full refund under policy v7. Order
-              #87954 is outside the 30 day window, so I drafted a reply offering store credit instead.
+            <p className="stream text-body-regular text-text-primary">
+              {ANSWER.split(" ").map((w, i) => (
+                <span key={i} style={{ "--i": i } as CSSProperties}>{`${w} `}</span>
+              ))}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <Chip variant="caption" color="soft">Policy v7, section 3</Chip>
@@ -179,12 +205,22 @@ function AgentRun({ onRunningChange }: { onRunningChange: (running: boolean) => 
                 </DropdownGroup>
               </DropdownPopover>
             </Dropdown>
-            <label className="min-w-0 flex-1">
+            <label className="relative min-w-0 flex-1">
               <span className="sr-only">Message the agent</span>
               <input
-                className="w-full bg-transparent text-body-regular text-text-primary outline-none placeholder:text-text-placeholder"
-                placeholder="Ask about tickets, orders or policies"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                className="w-full bg-transparent text-body-regular text-text-primary outline-none"
               />
+              {!draft && (
+                <span
+                  key={prompt}
+                  aria-hidden
+                  className="label-in pointer-events-none absolute inset-y-0 start-0 flex max-w-full items-center truncate text-body-regular text-text-placeholder"
+                >
+                  {PROMPTS[prompt]}
+                </span>
+              )}
             </label>
             <Button size="small" iconOnly leadingIcon={RiArrowUpLine} aria-label="Send" type="submit" />
           </form>

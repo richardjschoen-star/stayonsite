@@ -38,7 +38,7 @@ import {
   RiSpeedUpLine,
   RiTimerLine,
 } from "@remixicon/react";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 
 function SectionHead({
   title,
@@ -48,7 +48,7 @@ function SectionHead({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-4 text-center">
+    <div className="reveal flex flex-col items-center gap-4 text-center">
       <h2 className="max-w-[18ch] text-section-semibold font-stretch-semi-condensed text-balance text-text-primary">
         {title}
       </h2>
@@ -207,14 +207,14 @@ export function Work() {
           own infrastructure today.
         </SectionHead>
       </div>
-      <div className="mx-auto w-full max-w-[1240px] px-4 sm:px-6">
+      <div className="reveal mx-auto w-full max-w-[1240px] px-4 sm:px-6">
         <Carousel aria-label="Case studies" gap={16}>
           {WORK.map((w) => (
             <CarouselItem key={w.client} className="w-[min(380px,85vw)]">
-              <article className="flex h-full flex-col rounded-3xl border border-border-button-default bg-background-secondary-default p-1.5">
+              <article className="spotlight group flex h-full flex-col rounded-3xl border border-border-button-default bg-background-secondary-default p-1.5">
                 <div className="relative h-[340px] overflow-hidden rounded-[20px] bg-background-primary-default p-3">
                   <div
-                    className="pointer-events-none select-none [&_*]:pointer-events-none"
+                    className="pointer-events-none origin-top transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] select-none group-hover:scale-[1.03] motion-reduce:transition-none [&_*]:pointer-events-none"
                     inert
                   >
                     {w.thumb}
@@ -242,7 +242,7 @@ export function Work() {
                   <LinkButton
                     href="#contact"
                     trailingIcon={RiArrowRightLine}
-                    className="mt-auto self-start pt-2"
+                    className="nudge mt-auto self-start pt-2"
                   >
                     Ask about this project
                   </LinkButton>
@@ -495,7 +495,12 @@ export function Process() {
           <p className="text-body-2-medium text-text-secondary">
             Edit a cell. The release gate is 97%.
           </p>
-          <Chip variant="subtle" color={passRate >= 97 ? "blue" : "rose"}>
+          <Chip
+            key={passRate >= 97 ? "ships" : "blocked"}
+            variant="subtle"
+            color={passRate >= 97 ? "blue" : "rose"}
+            className="pop"
+          >
             {passRate.toFixed(1)}% {passRate >= 97 ? "ships" : "blocked"}
           </Chip>
         </div>
@@ -526,7 +531,7 @@ export function Process() {
       <Tabs
         selectedKey={step}
         onSelectionChange={(k) => setStep(String(k))}
-        className="flex flex-col gap-8"
+        className="reveal flex flex-col gap-8"
       >
         <div className="flex flex-col gap-3">
           {/* Reverse UI's timeline progress: filled up to the phase on screen. */}
@@ -534,13 +539,15 @@ export function Process() {
             {STEPS.map((s, i) => (
               <span
                 key={s.id}
-                className={cx(
-                  "h-1 rounded-full transition-colors duration-300",
-                  i <= index
-                    ? "bg-brand-yellow"
-                    : "bg-background-tertiary-default",
-                )}
-              />
+                className="h-1 overflow-hidden rounded-full bg-background-tertiary-default"
+              >
+                <span
+                  className={cx(
+                    "block h-full origin-left rounded-full bg-brand-yellow transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none rtl:origin-right",
+                    i <= index ? "scale-x-100" : "scale-x-0",
+                  )}
+                />
+              </span>
             ))}
           </div>
           <TabList aria-label="Project phases" className="overflow-x-auto">
@@ -555,7 +562,7 @@ export function Process() {
             id={s.id}
             className="grid items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
           >
-            <div className="flex flex-col gap-5">
+            <div className="enter flex flex-col gap-5">
               <Chip variant="subtle" color="yellow" className="self-start">
                 <RiTimerLine className="me-1 size-3.5" aria-hidden />
                 {s.length}
@@ -730,16 +737,25 @@ export function Process() {
 
 /* --------------------------------------------------------- Testimonial --- */
 
+const QUOTE_WORDS =
+  "We expected a chatbot. We got a support agent our auditors signed off on, running in our own AWS account. It closes seven in ten tickets and no customer data went to anyone.".split(" ");
+
 export function Testimonial() {
   return (
     <section className="mx-auto flex max-w-[960px] flex-col items-center gap-8 px-4 py-20 text-center sm:px-6">
-      <img src="/mark.png" alt="" className="size-8" />
-      <blockquote className="text-display-4-medium font-stretch-semi-condensed text-balance text-text-primary">
-        We expected a chatbot. We got a support agent our auditors signed off
-        on, running in our own AWS account. It closes seven in ten tickets and
-        no customer data went to anyone.
+      <img src="/mark.png" alt="" className="scroll-spin size-8" />
+      {/* Words fill in as the quote scrolls through the viewport. */}
+      <blockquote className="scrub-words text-display-4-medium font-stretch-semi-condensed text-balance text-text-primary">
+        {QUOTE_WORDS.map((w, i) => {
+          const at = 12 + (i / QUOTE_WORDS.length) * 34;
+          return (
+            <span key={i} style={{ "--s": `${at}%`, "--e": `${at + 8}%` } as CSSProperties}>
+              {`${w} `}
+            </span>
+          );
+        })}
       </blockquote>
-      <div className="flex items-center gap-3 text-start">
+      <div className="reveal flex items-center gap-3 text-start">
         <Avatar size="lg" color="blue" initials="ML" />
         <div>
           <p className="text-body-medium text-text-primary">Mara Lindqvist</p>
@@ -795,7 +811,7 @@ export function Faq() {
         {FAQ.map(([q, a]) => (
           <details
             key={q}
-            className="group rounded-2xl border border-border-button-default bg-background-primary-default transition-colors duration-150 open:bg-background-secondary-default"
+            className="reveal group rounded-2xl border border-border-button-default bg-background-primary-default transition-colors duration-150 hover:border-border-button-hover open:bg-background-secondary-default"
           >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 py-4 text-headline-medium text-text-primary outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring [&::-webkit-details-marker]:hidden">
               {q}
@@ -831,7 +847,7 @@ export function Contact() {
       id="contact"
       className="mx-auto grid max-w-[1240px] items-start gap-10 px-4 py-28 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
     >
-      <div className="flex flex-col gap-6 lg:sticky lg:top-28">
+      <div className="reveal flex flex-col gap-6 lg:sticky lg:top-28">
         <h2 className="text-section-semibold font-stretch-semi-condensed text-balance text-text-primary">
           Bring us one workflow you want gone
         </h2>
@@ -870,7 +886,7 @@ export function Contact() {
 
       <form
         onSubmit={submit}
-        className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-secondary-default p-6"
+        className="reveal flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-secondary-default p-6"
       >
         <div className="grid gap-5 sm:grid-cols-2">
           <Input

@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   RiBookOpenLine,
   RiCustomerService2Line,
@@ -42,7 +42,7 @@ const FILTERS: { id: "all" | Category; label: string }[] = [
 /** A Bencho-style tile: the live demo on a tray, the plain-language promise under it. */
 function Tile({ title, description, children, bare }: { title: string; description: string; children: ReactNode; bare?: boolean }) {
   return (
-    <article className="mb-4 break-inside-avoid rounded-3xl border border-border-button-default bg-background-primary-default p-2">
+    <article className="spotlight reveal mb-4 break-inside-avoid rounded-3xl border border-border-button-default bg-background-primary-default p-2">
       {bare ? children : <div className="rounded-[18px] bg-background-secondary-default p-4">{children}</div>}
       <div className="flex flex-col gap-1 px-3 pt-4 pb-3">
         <h3 className="text-title-3-semibold text-text-primary">{title}</h3>
@@ -52,8 +52,36 @@ function Tile({ title, description, children, bare }: { title: string; descripti
   );
 }
 
+/** Bencho's confetti, kept small: a ring of brand dots off the approval. */
+function Burst() {
+  return (
+    <span aria-hidden className="burst pointer-events-none absolute top-1/2 left-1/2">
+      {Array.from({ length: 16 }, (_, i) => {
+        const a = (i / 16) * Math.PI * 2;
+        const r = 56 + (i % 3) * 18;
+        return (
+          <span
+            key={i}
+            style={{ "--dx": `${Math.cos(a) * r}px`, "--dy": `${Math.sin(a) * r}px` } as CSSProperties}
+            className={cx("absolute size-1.5 rounded-full", i % 2 ? "bg-brand-yellow" : "bg-accent-500")}
+          />
+        );
+      })}
+    </span>
+  );
+}
+
 function Approval() {
   const [state, setState] = useState<"pending" | "approved" | "declined">("pending");
+  return (
+    <div className="relative">
+      <ApprovalCard state={state} setState={setState} />
+      {state === "approved" && <Burst />}
+    </div>
+  );
+}
+
+function ApprovalCard({ state, setState }: { state: "pending" | "approved" | "declined"; setState: (s: "pending" | "approved" | "declined") => void }) {
   if (state === "pending")
     return (
       <Notification
@@ -115,20 +143,26 @@ function Sources() {
                 x1="50" y1="50" x2={p.x} y2={p.y}
                 strokeWidth={on.has(s.id) ? 0.6 : 0.3}
                 strokeDasharray={on.has(s.id) ? undefined : "1 1.2"}
-                className={cx("transition-colors duration-150", on.has(s.id) ? "stroke-accent-500" : "stroke-separator-border-strong")}
+                className={cx("transition-colors duration-150", on.has(s.id) ? "flow stroke-accent-500" : "stroke-separator-border-strong")}
               />
             );
           })}
         </svg>
-        <img src="/mark.png" alt="" className="absolute top-1/2 left-1/2 size-10 -translate-1/2" />
+        {/* The hub turns a petal for every source connected. */}
+        <img
+          src="/mark.png"
+          alt=""
+          style={{ rotate: `${on.size * 60}deg` }}
+          className="absolute top-1/2 left-1/2 size-10 -translate-1/2 transition-[rotate] duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none"
+        />
         {SOURCES.map((s, i) => {
           const p = pos(i);
           return (
             <span
-              key={s.id}
+              key={`${s.id}-${on.has(s.id)}`}
               style={{ left: `${p.x}%`, top: `${p.y}%` }}
               className={cx(
-                "absolute flex size-10 -translate-1/2 items-center justify-center rounded-full border transition-colors duration-150",
+                "pop absolute flex size-10 -translate-1/2 items-center justify-center rounded-full border transition-colors duration-150",
                 on.has(s.id)
                   ? "border-accent-500 bg-background-primary-default text-accent-400"
                   : "border-border-button-default bg-background-secondary-default text-foreground-icon-tertiary",
@@ -146,7 +180,7 @@ function Sources() {
           </Checkbox>
         ))}
       </div>
-      <p className="text-body-2-medium text-text-secondary" aria-live="polite">
+      <p key={docs} className="number-fade text-body-2-medium text-text-secondary" aria-live="polite">
         {on.size === 0 ? "Connect a source to start indexing." : `${docs.toLocaleString("en-US")} documents searchable, with citations.`}
       </p>
     </div>
@@ -197,7 +231,7 @@ function Models() {
         ].map(([k, v]) => (
           <div key={k} className="rounded-xl bg-background-primary-default p-3">
             <dt className="text-caption-1-medium text-text-tertiary">{k}</dt>
-            <dd className="text-title-3-semibold text-text-primary tabular-nums">{v}</dd>
+            <dd key={v} className="number-fade text-title-3-semibold text-text-primary tabular-nums">{v}</dd>
           </div>
         ))}
       </dl>
@@ -240,17 +274,18 @@ function Context() {
         <SegmentedControlItem id="engineered">Engineered</SegmentedControlItem>
       </SegmentedControl>
       <div className="flex items-baseline justify-between">
-        <p className="text-title-1-medium text-text-primary tabular-nums">{used}K</p>
+        <p key={used} className="number-fade text-title-1-medium text-text-primary tabular-nums">{used}K</p>
         <p className="text-body-2-medium text-text-tertiary">of 200K tokens, ${(used * 0.0021).toFixed(2)} per answer</p>
       </div>
-      <div className="grid grid-cols-[repeat(25,minmax(0,1fr))] gap-[3px]" aria-hidden>
+      <div key={mode} className="grid grid-cols-[repeat(25,minmax(0,1fr))] gap-[3px]" aria-hidden>
         {Array.from({ length: 200 }, (_, i) => {
           const r = dots[i];
           return (
             <span
               key={i}
+              style={{ "--i": i } as CSSProperties}
               className={cx(
-                "aspect-square rounded-full transition-opacity duration-150",
+                "cell-pop aspect-square rounded-full transition-opacity duration-150",
                 r ? r.tone : "bg-background-tertiary-default",
                 hover && r && r.label !== hover && "opacity-25",
               )}
@@ -291,8 +326,8 @@ function Regions() {
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-body-2-medium text-text-tertiary">{r.detail}</p>
-          <p className="text-title-1-medium text-text-primary tabular-nums">{r.ms} ms</p>
+          <p key={r.detail} className="number-fade text-body-2-medium text-text-tertiary">{r.detail}</p>
+          <p key={r.id} className="number-fade text-title-1-medium text-text-primary tabular-nums">{r.ms} ms</p>
         </div>
         <Chip variant="subtle" color="yellow">
           <RiGlobalLine className="me-1 size-3.5" aria-hidden />
@@ -350,7 +385,7 @@ function Deploy() {
             {i === 0 ? l : `✓ ${l}`}
           </div>
         ))}
-        {lines < LOG.length && <span className="inline-block h-3.5 w-1.5 translate-y-0.5 animate-pulse bg-text-secondary motion-reduce:animate-none" />}
+        <span aria-hidden className="blink inline-block h-3.5 w-1.5 translate-y-0.5 bg-text-secondary" />
       </pre>
       <Button variant="secondary" size="small" className="self-start" onClick={run}>
         {lines > 1 ? "Deploy again" : "Run the deploy"}
@@ -418,7 +453,7 @@ export function Capabilities() {
 
   return (
     <section id="services" className="mx-auto flex max-w-[1240px] flex-col gap-10 px-4 py-28 sm:px-6">
-      <div className="flex flex-col items-center gap-4 text-center">
+      <div className="reveal flex flex-col items-center gap-4 text-center">
         <h2 className="max-w-[16ch] text-section-semibold font-stretch-semi-condensed text-balance text-text-primary">
           What we build, running on this page
         </h2>
@@ -426,7 +461,7 @@ export function Capabilities() {
           Every tile below is a working piece of a system we have shipped. Click, drag and toggle them.
         </p>
       </div>
-      <div className="-mx-4 overflow-x-auto px-4">
+      <div className="reveal -mx-4 flex overflow-x-auto px-4">
         <SegmentedControl
           className="mx-auto w-max"
           aria-label="Filter by service"

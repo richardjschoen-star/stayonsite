@@ -27,7 +27,8 @@ const rad = (d: number) => (d * Math.PI) / 180;
 
 /**
  * Dot globe (after Bencho's dot-globe and Reverse UI's rotating globe). It
- * only turns when a pin is chosen, easing the chosen pin to the front.
+ * eases the chosen pin to the front, then sways gently around it with the pin
+ * pulsing. Animates only while on screen; reduced motion gets a still frame.
  */
 export function Globe({ pins, active, className }: { pins: GlobePin[]; active: string; className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -44,8 +45,10 @@ export function Globe({ pins, active, className }: { pins: GlobePin[]; active: s
     const land = style.color;
     const pin = style.getPropertyValue("--color-brand-yellow").trim();
     let frame = 0;
+    let visible = true;
+    const start = performance.now();
 
-    const draw = () => {
+    const draw = (now = start) => {
       const size = canvas.clientWidth;
       const dpr = window.devicePixelRatio || 1;
       if (canvas.width !== size * dpr) canvas.width = canvas.height = size * dpr;
@@ -75,10 +78,14 @@ export function Globe({ pins, active, className }: { pins: GlobePin[]; active: s
         if (p.z <= 0) continue;
         const on = g.id === target.id;
         ctx.fillStyle = pin;
-        ctx.globalAlpha = on ? 0.25 : 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
-        ctx.fill();
+        if (on) {
+          // Radar pulse: a ring that grows and fades every 1.8s.
+          const t = reduce ? 0.35 : ((now - start) % 1800) / 1800;
+          ctx.globalAlpha = (1 - t) * 0.35;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 5 + t * 14, 0, Math.PI * 2);
+          ctx.fill();
+        }
         ctx.globalAlpha = on ? 1 : 0.55;
         ctx.beginPath();
         ctx.arc(p.x, p.y, on ? 4 : 3, 0, Math.PI * 2);
@@ -87,21 +94,27 @@ export function Globe({ pins, active, className }: { pins: GlobePin[]; active: s
       ctx.globalAlpha = 1;
     };
 
-    const tick = () => {
+    const tick = (now: number) => {
       const v = view.current;
-      const dLon = ((target.lon - v.lon + 540) % 360) - 180;
+      const sway = reduce ? 0 : Math.sin((now - start) / 2600) * 9;
+      const dLon = ((target.lon + sway - v.lon + 540) % 360) - 180;
       const dLat = target.lat * 0.6 - v.lat;
-      const done = reduce || (Math.abs(dLon) < 0.05 && Math.abs(dLat) < 0.05);
-      v.lon += done ? dLon : dLon * 0.08;
-      v.lat += done ? dLat : dLat * 0.08;
-      draw();
-      if (!done) frame = requestAnimationFrame(tick);
+      v.lon += reduce ? dLon : dLon * 0.08;
+      v.lat += reduce ? dLat : dLat * 0.08;
+      draw(now);
+      if (!reduce && visible) frame = requestAnimationFrame(tick);
     };
-    tick();
+    tick(start);
 
-    const ro = new ResizeObserver(draw);
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      cancelAnimationFrame(frame);
+      if (visible && !reduce) frame = requestAnimationFrame(tick);
+    });
+    io.observe(canvas);
+    const ro = new ResizeObserver(() => draw());
     ro.observe(canvas);
-    return () => (cancelAnimationFrame(frame), ro.disconnect());
+    return () => (cancelAnimationFrame(frame), io.disconnect(), ro.disconnect());
   }, [pins, active, theme]);
 
   return <canvas ref={ref} aria-hidden className={className} />;
