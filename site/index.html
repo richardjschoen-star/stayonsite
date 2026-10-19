@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StayonSite: AI software that stays on site</title>
+    <meta name="description" content="StayonSite designs, builds and runs AI agents, copilots and search inside your own cloud or data center." />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/png" href="/mark.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&display=swap"
+    />
+    <script>
+      // Dark unless the visitor chose light; runs before paint to avoid a flash.
+      try {
+        if (localStorage.getItem("boardui:theme") === "light") document.documentElement.classList.remove("dark");
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
