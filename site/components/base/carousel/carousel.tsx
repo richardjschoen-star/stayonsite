@@ -167,6 +167,32 @@ export function Carousel({
     track.scrollTo({ left, behavior: reduce ? "auto" : "smooth" });
   };
 
+  /** Prev/next step from where the track actually is, not from `active`.
+   *  When several cards share the viewport the track runs out of scroll
+   *  before the last card reaches the start edge, so `active` is pinned to the
+   *  last index while the real position is an earlier card. Stepping by index
+   *  from there targets a position past the scroll range, the browser clamps
+   *  it to the current offset, and the button looks dead. Clamping every
+   *  card's resting offset and taking the nearest one on the requested side
+   *  always moves. */
+  const step = (dir: -1 | 1) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const max = track.scrollWidth - track.clientWidth;
+    const here = inlineScrollOffset(track.scrollLeft, direction);
+    const trackRect = track.getBoundingClientRect();
+    const stops = items()
+      .map((item) => {
+        const physical = scrollOffsetForItem(trackRect, item.getBoundingClientRect(), track.scrollLeft, direction, align);
+        return Math.min(max, Math.max(0, direction === "rtl" ? -physical : physical));
+      })
+      .filter((offset) => (dir === 1 ? offset > here + 1 : offset < here - 1));
+    if (stops.length === 0) return;
+    const target = dir === 1 ? Math.min(...stops) : Math.max(...stops);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    track.scrollTo({ left: direction === "rtl" ? -target : target, behavior: reduce ? "auto" : "smooth" });
+  };
+
   return (
     <div
       ref={ref}
@@ -183,14 +209,14 @@ export function Carousel({
             size="small"
             aria-label="Previous slide"
             disabled={atStart}
-            onClick={() => scrollToIndex(active - 1)}
+            onClick={() => step(-1)}
           />
           <IconButton
             icon={RiArrowRightSLine}
             size="small"
             aria-label="Next slide"
             disabled={atEnd}
-            onClick={() => scrollToIndex(active + 1)}
+            onClick={() => step(1)}
           />
         </div>
       ) : null}
