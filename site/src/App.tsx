@@ -20,7 +20,7 @@ import { InputBase, TextField } from "@/components/base/input/input";
 import { Kbd } from "@/components/base/kbd/kbd";
 import { Capabilities } from "./capabilities";
 import { Console } from "./console";
-import { Contact, Faq, Pricing, Process, Testimonial, Work } from "./sections";
+import { Contact, Faq, Process, Testimonial, Work } from "./sections";
 import { cx } from "@/utils/cx";
 
 const LINKS = [
@@ -265,7 +265,7 @@ export default function App() {
         <Capabilities />
         <Work />
         <Process />
-        <Pricing />
+        {/* <Pricing /> paused; see sections.tsx */}
         <Testimonial />
         <Faq />
         <Contact />
