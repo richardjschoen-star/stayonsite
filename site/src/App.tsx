@@ -281,7 +281,7 @@ function Footer() {
         ))}
       </div>
       <div className="mx-auto flex max-w-[1240px] items-end gap-[0.06em] px-4 pt-16 pb-[0.14em] text-wordmark-medium font-stretch-semi-condensed text-text-primary select-none sm:px-6" aria-hidden>
-        <span className="reveal">
+        <span className="reveal reveal-short">
           Stayon<span className="italic">Site</span>
         </span>
         <Mark className="scroll-spin mb-[0.08em] size-[0.5em]" />

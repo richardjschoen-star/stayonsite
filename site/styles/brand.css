@@ -313,6 +313,11 @@ html {
       animation-range: entry 0px entry 220px;
     }
 
+    /* Short elements at the page end (footer wordmark) never scroll 220px deep; fill over their own entry. */
+    .reveal.reveal-short {
+      animation-range: entry 0% entry 100%;
+    }
+
     .scroll-spin {
       animation: scroll-spin linear both;
       animation-timeline: view();
