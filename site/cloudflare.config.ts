@@ -1,4 +1,5 @@
 import { defineConfig } from "cf/config";
+import { bindings } from "@cloudflare/config";
 
 export default defineConfig({
   worker: {
@@ -8,8 +9,13 @@ export default defineConfig({
     "observability": {
       "enabled": true
     },
+    "entrypoint": "./worker/index.ts",
+    "env": {
+      "EMAIL": bindings.sendEmail({ destinationAddress: "hello@stayon.site" })
+    },
     "assets": {
-      "notFoundHandling": "single-page-application"
+      "notFoundHandling": "none",
+      "runWorkerFirst": ["/api/*"]
     }
   }
 });

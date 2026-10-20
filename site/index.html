@@ -6,13 +6,32 @@
     <title>StayonSite: AI software that stays on site</title>
     <meta name="description" content="StayonSite designs, builds and runs AI agents, copilots and search inside your own cloud or data center." />
     <meta name="theme-color" content="#000000" />
+    <link rel="canonical" href="https://stayon.site/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="StayonSite" />
+    <meta property="og:url" content="https://stayon.site/" />
+    <meta property="og:title" content="StayonSite: AI software that stays on site" />
+    <meta property="og:description" content="AI agents, copilots and search designed, built and run inside your own cloud or data center." />
+    <meta property="og:image" content="https://stayon.site/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="apple-touch-icon" href="/mark.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "StayonSite",
+        "url": "https://stayon.site/",
+        "logo": "https://stayon.site/mark.png",
+        "email": "hello@stayon.site",
+        "description": "StayonSite designs, builds and runs AI agents, copilots and search inside your own cloud or data center."
+      }
+    </script>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="/mark.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&display=swap"
-    />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preload" href="/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin />
     <script>
       // Dark unless the visitor chose light; runs before paint to avoid a flash.
       try {
@@ -22,6 +41,11 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <h1>StayonSite: AI software that stays on site</h1>
+      <p>We design, build and run AI agents, copilots and search inside your own cloud or data center, so your data never leaves your network.</p>
+      <p>Contact: <a href="mailto:hello@stayon.site">hello@stayon.site</a></p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

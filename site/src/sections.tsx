@@ -807,6 +807,20 @@ export function Faq() {
       <SectionHead title="Questions we hear on every first call">
         If yours is not here, ask it on the call.
       </SectionHead>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: FAQ.map(([name, text]) => ({
+              "@type": "Question",
+              name,
+              acceptedAnswer: { "@type": "Answer", text },
+            })),
+          }).replace(/</g, "\\u003c"),
+        }}
+      />
       <div className="flex flex-col gap-2">
         {FAQ.map(([q, a]) => (
           <details
@@ -836,10 +850,15 @@ export function Faq() {
 const FIELD_LABEL = "text-body-medium text-text-primary";
 
 export function Contact() {
-  const [sent, setSent] = useState(false);
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const [start, setStart] = useState("");
+  const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSent(true);
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      body: new FormData(e.currentTarget),
+    }).catch(() => null);
+    setStatus(res?.ok ? "sent" : "error");
   };
 
   return (
@@ -959,7 +978,12 @@ export function Contact() {
           <span className={FIELD_LABEL} aria-hidden>
             Ideal start date
           </span>
-          <DatePicker aria-label="Ideal start date" className="self-start" />
+          <DatePicker
+            aria-label="Ideal start date"
+            className="self-start"
+            onChange={(d) => setStart(d?.toString() ?? "")}
+          />
+          <input type="hidden" name="start" value={start} />
         </div>
         <Textarea
           label="Tell us about the workflow"
@@ -968,18 +992,34 @@ export function Contact() {
           placeholder="Who does it today, how often, and what it costs you"
         />
         <Checkbox name="nda">Send me your NDA before we talk</Checkbox>
-        {sent ? (
+        <input
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden
+          className="hidden"
+        />
+        {status === "sent" ? (
           <Notification
             status="success"
             title="Brief received"
-            description="An engineer will reply within one business day. This demo form is not connected to a mailbox yet."
+            description="An engineer will reply within one business day."
             dismissible
-            onDismiss={() => setSent(false)}
+            onDismiss={() => setStatus("idle")}
           />
         ) : (
-          <Button type="submit" className="self-start">
-            Send project brief
-          </Button>
+          <>
+            {status === "error" && (
+              <Notification
+                status="error"
+                title="Could not send"
+                description="Please email hello@stayon.site instead."
+              />
+            )}
+            <Button type="submit" className="self-start">
+              Send project brief
+            </Button>
+          </>
         )}
       </form>
     </section>

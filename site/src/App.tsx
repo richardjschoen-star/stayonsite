@@ -480,6 +480,14 @@ function Footer() {
       </div>
       <div className="mx-auto flex max-w-[1240px] justify-between gap-4 px-4 py-6 text-body-2-medium text-text-tertiary sm:px-6">
         <span>© 2026 StayonSite</span>
+        <span className="flex gap-4">
+          <a href="/privacy/" className="hover:text-text-primary">
+            Privacy
+          </a>
+          <a href="/terms/" className="hover:text-text-primary">
+            Terms
+          </a>
+        </span>
       </div>
     </footer>
   );
