@@ -1,15 +1,3 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
-import { MotionConfig, motion } from "motion/react";
-import { Dialog, Modal, ModalOverlay } from "react-aria-components";
-import {
-  RiAnthropicFill,
-  RiArrowRightLine,
-  RiDeepseekFill,
-  RiGeminiFill,
-  RiMetaFill,
-  RiOpenaiFill,
-  RiSearchLine,
-} from "@remixicon/react";
 import { AuthCard } from "@/components/application/auth/auth-card";
 import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { Badge } from "@/components/base/badges/badge";
@@ -19,10 +7,28 @@ import { IconButton } from "@/components/base/buttons/icon-button";
 import { LinkButton } from "@/components/base/buttons/link-button";
 import { InputBase, TextField } from "@/components/base/input/input";
 import { Kbd } from "@/components/base/kbd/kbd";
+import { cx } from "@/utils/cx";
+import {
+  RiAnthropicFill,
+  RiArrowRightLine,
+  RiDeepseekFill,
+  RiGeminiFill,
+  RiMetaFill,
+  RiOpenaiFill,
+  RiSearchLine,
+} from "@remixicon/react";
+import { MotionConfig, motion } from "motion/react";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
+import { Dialog, Modal, ModalOverlay } from "react-aria-components";
 import { Capabilities } from "./capabilities";
 import { Console } from "./console";
 import { Contact, Faq, Process, Testimonial, Work } from "./sections";
-import { cx } from "@/utils/cx";
 
 const LINKS = [
   { href: "#services", label: "Services" },
@@ -42,12 +48,28 @@ const WORKS_WITH = [
   { icon: RiDeepseekFill, label: "DeepSeek" },
 ];
 
-function Mark({ spinning, className, style }: { spinning?: boolean; className?: string; style?: CSSProperties }) {
-  return <img src="/mark.png" alt="" style={style} className={cx(spinning && "mark-spin", className)} />;
+function Mark({
+  spinning,
+  className,
+  style,
+}: {
+  spinning?: boolean;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <img
+      src="/mark.png"
+      alt=""
+      style={style}
+      className={cx(spinning && "mark-spin", className)}
+    />
+  );
 }
 
 /** Stagger for the `.rise` entrance. */
-const delay = (ms: number, extra?: CSSProperties) => ({ "--d": `${ms}ms`, ...extra }) as CSSProperties;
+const delay = (ms: number, extra?: CSSProperties) =>
+  ({ "--d": `${ms}ms`, ...extra }) as CSSProperties;
 
 /** Bencho's moving nav pill: follows the pointer, rests on the section in view. */
 function NavLinks() {
@@ -57,7 +79,11 @@ function NavLinks() {
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) =>
-        entries.forEach((e) => e.isIntersecting && setActive(e.target.id === "top" ? null : `#${e.target.id}`)),
+        entries.forEach(
+          (e) =>
+            e.isIntersecting &&
+            setActive(e.target.id === "top" ? null : `#${e.target.id}`),
+        ),
       { rootMargin: "-45% 0px -50% 0px" },
     );
     ["#top", ...LINKS.map((l) => l.href)].forEach((href) => {
@@ -69,15 +95,27 @@ function NavLinks() {
 
   const lit = hover ?? active;
   return (
-    <ul className="hidden items-center gap-1 lg:flex" onPointerLeave={() => setHover(null)}>
+    <ul
+      className="hidden items-center gap-1 lg:flex"
+      onPointerLeave={() => setHover(null)}
+    >
       {LINKS.map((l) => (
-        <li key={l.href} className="relative" onPointerEnter={() => setHover(l.href)}>
+        <li
+          key={l.href}
+          className="relative"
+          onPointerEnter={() => setHover(l.href)}
+        >
           {lit === l.href && (
             <motion.span
               layoutId="nav-pill"
               aria-hidden
               className="absolute inset-0 rounded-lg bg-background-secondary-default"
-              transition={{ type: "spring", stiffness: 520, damping: 42, mass: 0.7 }}
+              transition={{
+                type: "spring",
+                stiffness: 520,
+                damping: 42,
+                mass: 0.7,
+              }}
             />
           )}
           <a
@@ -96,11 +134,23 @@ function NavLinks() {
 }
 
 /** Reverse UI's Command K, on the native <dialog>: jump to any section. */
-function CommandMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+function CommandMenu({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
   const ref = useRef<HTMLDialogElement>(null);
   const [query, setQuery] = useState("");
-  const items = [...LINKS, { href: "#contact", label: "Book a discovery call" }, { href: "mailto:hello@stayon.site", label: "Email hello@stayon.site" }];
-  const hits = items.filter((i) => i.label.toLowerCase().includes(query.trim().toLowerCase()));
+  const items = [
+    ...LINKS,
+    { href: "#contact", label: "Book a discovery call" },
+    { href: "mailto:hello@stayon.site", label: "Email hello@stayon.site" },
+  ];
+  const hits = items.filter((i) =>
+    i.label.toLowerCase().includes(query.trim().toLowerCase()),
+  );
 
   useEffect(() => {
     const d = ref.current!;
@@ -120,25 +170,50 @@ function CommandMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
       onClick={(e) => e.target === ref.current && onClose()}
       className="pop-dialog m-auto mt-[12vh] w-[min(560px,calc(100vw-2rem))] rounded-3xl border border-border-button-default bg-background-primary-default p-2 text-text-primary shadow-xl backdrop:bg-black/70"
     >
-      <form method="dialog" onSubmit={(e) => (e.preventDefault(), hits[0] && go(hits[0].href))}>
-        <TextField aria-label="Search the site" value={query} onChange={setQuery} autoFocus>
-          <InputBase leadingIcon={RiSearchLine} placeholder="Where do you want to go?" />
+      <form
+        method="dialog"
+        onSubmit={(e) => (e.preventDefault(), hits[0] && go(hits[0].href))}
+      >
+        <TextField
+          aria-label="Search the site"
+          value={query}
+          onChange={setQuery}
+          autoFocus
+        >
+          <InputBase
+            leadingIcon={RiSearchLine}
+            placeholder="Where do you want to go?"
+          />
         </TextField>
       </form>
       <ul className="mt-2 flex flex-col">
         {hits.map((i, n) => (
-          <li key={i.href} className="rise" style={delay(n * 25, { "--rise": "4px", "--blur": "2px" } as CSSProperties)}>
+          <li
+            key={i.href}
+            className="rise"
+            style={delay(n * 25, {
+              "--rise": "4px",
+              "--blur": "2px",
+            } as CSSProperties)}
+          >
             <button
               type="button"
               onClick={() => go(i.href)}
               className="nudge flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-start text-body-medium text-text-primary transition-colors duration-150 outline-none hover:bg-background-primary-hover focus-visible:bg-background-primary-hover"
             >
               {i.label}
-              <RiArrowRightLine className="size-4 text-foreground-icon-tertiary" aria-hidden />
+              <RiArrowRightLine
+                className="size-4 text-foreground-icon-tertiary"
+                aria-hidden
+              />
             </button>
           </li>
         ))}
-        {hits.length === 0 && <li className="px-3 py-2.5 text-body-regular text-text-tertiary">Nothing matches. Try “pricing” or “work”.</li>}
+        {hits.length === 0 && (
+          <li className="px-3 py-2.5 text-body-regular text-text-tertiary">
+            Nothing matches. Try “pricing” or “work”.
+          </li>
+        )}
       </ul>
     </dialog>
   );
@@ -154,8 +229,16 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 transition-opacity duration-300 ease-out data-[entering]:opacity-0 data-[exiting]:opacity-0"
     >
       <Modal className="transform-gpu transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-[opacity,transform,filter] data-[entering]:scale-[0.85] data-[entering]:opacity-0 data-[entering]:blur-[4px] data-[exiting]:scale-[0.85] data-[exiting]:opacity-0 data-[exiting]:blur-[4px]">
-        <Dialog aria-label="Sign in to the client console" className="relative outline-none">
-          <CloseButton size="sm" aria-label="Close" onClick={onClose} className="absolute end-4 top-4 z-10" />
+        <Dialog
+          aria-label="Sign in to the client console"
+          className="relative outline-none"
+        >
+          <CloseButton
+            size="sm"
+            aria-label="Close"
+            onClick={onClose}
+            className="absolute end-4 top-4 z-10"
+          />
           <AuthCard
             mode="signin"
             layout="stacked"
@@ -171,13 +254,28 @@ function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   );
 }
 
-function Nav({ onSearch, onLogin }: { onSearch: () => void; onLogin: () => void }) {
+function Nav({
+  onSearch,
+  onLogin,
+}: {
+  onSearch: () => void;
+  onLogin: () => void;
+}) {
   return (
     <header className="sticky top-0 z-40">
       {/* Bencho's progressive blur: the bar dissolves into the page instead of ending on a line. */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-background-full to-transparent backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_45%,transparent)]" />
-      <nav aria-label="Main" className="relative mx-auto flex max-w-[1240px] items-center gap-6 px-4 py-4 sm:px-6">
-        <a href="#top" className="group flex items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-background-full to-transparent backdrop-blur-md [mask-image:linear-gradient(to_bottom,black_45%,transparent)]"
+      />
+      <nav
+        aria-label="Main"
+        className="relative mx-auto flex max-w-[1240px] items-center gap-6 px-4 py-4 sm:px-6"
+      >
+        <a
+          href="#top"
+          className="group flex items-center gap-2 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-border-focus-ring"
+        >
           <Mark className="size-6 transition-[rotate] duration-[600ms] ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:rotate-60 motion-reduce:transition-none" />
           <span className="text-title-3-medium text-text-primary">
             Stayon<span className="italic">Site</span>
@@ -190,23 +288,43 @@ function Nav({ onSearch, onLogin }: { onSearch: () => void; onLogin: () => void 
             onClick={onSearch}
             className="hidden h-9 w-52 items-center gap-2 rounded-full bg-background-secondary-default ps-3 pe-1.5 text-body-medium text-text-placeholder transition-colors duration-150 outline-none hover:bg-background-secondary-hover focus-visible:ring-2 focus-visible:ring-border-focus-ring md:flex"
           >
-            <RiSearchLine className="size-4 text-foreground-icon-tertiary" aria-hidden />
+            <RiSearchLine
+              className="size-4 text-foreground-icon-tertiary"
+              aria-hidden
+            />
             Search
             <Kbd className="ms-auto">⌘K</Kbd>
           </button>
-          <IconButton icon={RiSearchLine} aria-label="Search" onClick={onSearch} className="md:hidden" />
+          <IconButton
+            icon={RiSearchLine}
+            aria-label="Search"
+            onClick={onSearch}
+            className="md:hidden"
+          />
           <ThemeToggle appearance="segmented" size="small" />
-          <LinkButton variant="secondary" onClick={onLogin} className="hidden px-2 sm:inline-flex">
+          <LinkButton
+            variant="secondary"
+            onClick={onLogin}
+            className="hidden px-2 sm:inline-flex"
+          >
             Client login
           </LinkButton>
-          <ButtonLink href="#contact" size="small">Book a call</ButtonLink>
+          <ButtonLink href="#contact" size="small">
+            Book a call
+          </ButtonLink>
         </div>
       </nav>
     </header>
   );
 }
 
-function Hero({ running, onRunningChange }: { running: boolean; onRunningChange: (r: boolean) => void }) {
+function Hero({
+  running,
+  onRunningChange,
+}: {
+  running: boolean;
+  onRunningChange: (r: boolean) => void;
+}) {
   return (
     <section id="top" className="flex flex-col gap-16 pt-14 pb-10 sm:pt-20">
       <div className="mx-auto flex max-w-[1080px] flex-col items-center gap-7 px-4 text-center">
@@ -223,32 +341,75 @@ function Hero({ running, onRunningChange }: { running: boolean; onRunningChange:
           {HEADLINE.map((w, i) => (
             <Fragment key={w}>
               {i > 0 && " "}
-              <span className="rise inline-block" style={delay(80 + i * 70)}>{w}</span>
+              <span className="rise inline-block" style={delay(80 + i * 70)}>
+                {w}
+              </span>
             </Fragment>
           ))}
-          <Mark spinning={running} style={delay(560)} className="mark-in ms-[0.14em] inline-block size-[0.62em] align-baseline" />
+          <Mark
+            spinning={running}
+            style={delay(560)}
+            className="mark-in ms-[0.14em] inline-block size-[0.62em] align-baseline"
+          />
         </h1>
-        <p className="rise max-w-[58ch] text-headline-regular text-pretty text-text-secondary" style={delay(480, { "--rise": "12px", "--blur": "3px" } as CSSProperties)}>
-          StayonSite designs, builds and runs AI agents, copilots and search for your business. Everything is deployed inside
-          your own cloud or data center, so your data never leaves your network.
+        <p
+          className="rise max-w-[58ch] text-headline-regular text-pretty text-text-secondary"
+          style={delay(480, {
+            "--rise": "12px",
+            "--blur": "3px",
+          } as CSSProperties)}
+        >
+          StayonSite designs, builds and runs AI agents, copilots and search for
+          your business. Everything is deployed inside your own cloud or data
+          center, so your data never leaves your network.
         </p>
-        <div className="rise flex flex-wrap items-center justify-center gap-3" style={delay(580, { "--rise": "12px", "--blur": "3px" } as CSSProperties)}>
-          <ButtonLink href="#contact" className="shine">Book a discovery call</ButtonLink>
-          <ButtonLink href="#work" variant="secondary">See our work</ButtonLink>
+        <div
+          className="rise flex flex-wrap items-center justify-center gap-3"
+          style={delay(580, {
+            "--rise": "12px",
+            "--blur": "3px",
+          } as CSSProperties)}
+        >
+          <ButtonLink href="#contact" className="shine">
+            Book a discovery call
+          </ButtonLink>
+          <ButtonLink href="#work" variant="secondary">
+            See our work
+          </ButtonLink>
         </div>
-        <div className="rise flex flex-col items-center gap-3 pt-4" style={delay(680, { "--rise": "8px", "--blur": "2px" } as CSSProperties)}>
-          <p className="text-body-2-medium text-text-tertiary">Model-agnostic. We ship with</p>
+        <div
+          className="rise flex flex-col items-center gap-3 pt-4"
+          style={delay(680, {
+            "--rise": "8px",
+            "--blur": "2px",
+          } as CSSProperties)}
+        >
+          <p className="text-body-2-medium text-text-tertiary">
+            Model-agnostic. We ship with
+          </p>
           <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             {WORKS_WITH.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-1.5 text-body-medium text-text-secondary transition-colors duration-150 hover:text-text-primary">
-                <Icon className="size-4 text-foreground-icon-secondary" aria-hidden />
+              <li
+                key={label}
+                className="flex items-center gap-1.5 text-body-medium text-text-secondary transition-colors duration-150 hover:text-text-primary"
+              >
+                <Icon
+                  className="size-4 text-foreground-icon-secondary"
+                  aria-hidden
+                />
                 {label}
               </li>
             ))}
           </ul>
         </div>
       </div>
-      <div className="rise" style={delay(760, { "--rise": "40px", "--blur": "4px" } as CSSProperties)}>
+      <div
+        className="rise"
+        style={delay(760, {
+          "--rise": "40px",
+          "--blur": "4px",
+        } as CSSProperties)}
+      >
         <Console onRunningChange={onRunningChange} />
       </div>
     </section>
@@ -257,15 +418,38 @@ function Hero({ running, onRunningChange }: { running: boolean; onRunningChange:
 
 function Footer() {
   const cols = [
-    { title: "Services", links: [["Agents", "#services"], ["Search", "#services"], ["Copilots", "#services"], ["Infrastructure", "#services"]] },
-    { title: "Company", links: [["Work", "#work"], ["Process", "#process"], ["Pricing", "#pricing"], ["FAQ", "#faq"]] },
-    { title: "Contact", links: [["hello@stayon.site", "mailto:hello@stayon.site"], ["Book a call", "#contact"]] },
+    {
+      title: "Services",
+      links: [
+        ["Agents", "#services"],
+        ["Search", "#services"],
+        ["Copilots", "#services"],
+        ["Infrastructure", "#services"],
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        ["Work", "#work"],
+        ["Process", "#process"],
+        ["Pricing", "#pricing"],
+        ["FAQ", "#faq"],
+      ],
+    },
+    {
+      title: "Contact",
+      links: [
+        ["hello@stayon.site", "mailto:hello@stayon.site"],
+        ["Book a call", "#contact"],
+      ],
+    },
   ];
   return (
     <footer className="overflow-clip border-t border-separator-border">
       <div className="mx-auto grid max-w-[1240px] gap-10 px-4 pt-16 sm:grid-cols-[2fr_1fr_1fr_1fr] sm:px-6">
         <p className="max-w-[32ch] text-body-regular text-text-secondary">
-          An AI software studio. We build systems that run in your environment and stay there.
+          An AI software studio. We build systems that run in your environment
+          and stay there.
         </p>
         {cols.map((c) => (
           <div key={c.title} className="flex flex-col gap-3">
@@ -273,14 +457,22 @@ function Footer() {
             <ul className="flex flex-col gap-2">
               {c.links.map(([label, href]) => (
                 <li key={label}>
-                  <a href={href} className="inline-block text-body-regular text-text-secondary transition-[color,translate] duration-150 hover:translate-x-0.5 hover:text-text-primary">{label}</a>
+                  <a
+                    href={href}
+                    className="inline-block text-body-regular text-text-secondary transition-[color,translate] duration-150 hover:translate-x-0.5 hover:text-text-primary"
+                  >
+                    {label}
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
-      <div className="mx-auto flex max-w-[1240px] items-end gap-[0.06em] px-4 pt-16 pb-[0.14em] text-wordmark-medium font-stretch-semi-condensed text-text-primary select-none sm:px-6" aria-hidden>
+      <div
+        className="mx-auto flex max-w-[1240px] items-end gap-[0.06em] px-4 pt-16 pb-[0.14em] text-wordmark-medium font-stretch-semi-condensed text-text-primary select-none sm:px-6"
+        aria-hidden
+      >
         <span className="reveal reveal-short">
           Stayon<span className="italic">Site</span>
         </span>
@@ -288,7 +480,6 @@ function Footer() {
       </div>
       <div className="mx-auto flex max-w-[1240px] justify-between gap-4 px-4 py-6 text-body-2-medium text-text-tertiary sm:px-6">
         <span>© 2026 StayonSite</span>
-        <span>Built with BoardUI</span>
       </div>
     </footer>
   );
@@ -313,7 +504,9 @@ export default function App() {
   // One listener feeds every .spotlight card its pointer position.
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
-      const el = (e.target as Element | null)?.closest?.<HTMLElement>(".spotlight");
+      const el = (e.target as Element | null)?.closest?.<HTMLElement>(
+        ".spotlight",
+      );
       if (!el) return;
       const r = el.getBoundingClientRect();
       el.style.setProperty("--x", `${e.clientX - r.left}px`);
@@ -325,22 +518,22 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-    <div className="min-h-screen bg-background-full text-text-primary">
-      <Nav onSearch={() => setSearch(true)} onLogin={() => setLogin(true)} />
-      <main>
-        <Hero running={running} onRunningChange={setRunning} />
-        <Capabilities />
-        <Work />
-        <Process />
-        {/* <Pricing /> paused; see sections.tsx */}
-        <Testimonial />
-        <Faq />
-        <Contact />
-      </main>
-      <Footer />
-      <CommandMenu open={search} onClose={() => setSearch(false)} />
-      <LoginModal open={login} onClose={() => setLogin(false)} />
-    </div>
+      <div className="min-h-screen bg-background-full text-text-primary">
+        <Nav onSearch={() => setSearch(true)} onLogin={() => setLogin(true)} />
+        <main>
+          <Hero running={running} onRunningChange={setRunning} />
+          <Capabilities />
+          <Work />
+          <Process />
+          {/* <Pricing /> paused; see sections.tsx */}
+          <Testimonial />
+          <Faq />
+          <Contact />
+        </main>
+        <Footer />
+        <CommandMenu open={search} onClose={() => setSearch(false)} />
+        <LoginModal open={login} onClose={() => setLogin(false)} />
+      </div>
     </MotionConfig>
   );
 }
