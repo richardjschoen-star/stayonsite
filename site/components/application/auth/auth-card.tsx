@@ -91,6 +91,15 @@ export interface AuthCardProps {
   centered?: boolean;
   /** Sign-up only: adds a stacked confirm-password field. */
   confirmPassword?: boolean;
+  /**
+   * Email-only sign-in (a one-time code or SSO follows): no password field,
+   * no remember/forgot row, and no link to sign up, for invite-only apps.
+   */
+  passwordless?: boolean;
+  /** Disables the submit button while a request is in flight. */
+  pending?: boolean;
+  /** An error under the fields, e.g. a rejected code. */
+  error?: ReactNode;
   /** Small print under the card, outside its border. */
   footnote?: ReactNode;
   /** Fires with the form's own FormData; wire it to your auth library. */
@@ -147,6 +156,9 @@ export function AuthCard({
   logo,
   centered = false,
   confirmPassword = false,
+  passwordless = false,
+  pending = false,
+  error,
   footnote,
   onSubmit,
   onProvider,
@@ -270,7 +282,7 @@ export function AuthCard({
         />
         )}
 
-        {verify ? null : signup && confirmPassword ? (
+        {verify || passwordless ? null : signup && confirmPassword ? (
           // Stacked, full width: a password field pair is easier to fill at
           // full width than in two half-width columns, and it keeps the whole
           // form on one rhythm.
@@ -303,7 +315,7 @@ export function AuthCard({
           />
         )}
 
-        {signup || verify ? null : (
+        {signup || verify || passwordless ? null : (
           <div className="flex items-center justify-between">
             <Checkbox size="sm" isSelected={remember} onChange={setRemember}>
               Remember me
@@ -312,7 +324,9 @@ export function AuthCard({
           </div>
         )}
 
-        <Button type="submit" className="w-full">
+        {error ? <p role="alert" className="text-body-2-medium text-text-error-primary">{error}</p> : null}
+
+        <Button type="submit" className="w-full" disabled={pending}>
           {copy.cta}
         </Button>
 
@@ -345,7 +359,7 @@ export function AuthCard({
           {copy.switchLead}{" "}
           <LinkButton onClick={onResend}>{copy.switchAction}</LinkButton>
         </p>
-      ) : (
+      ) : passwordless ? null : (
         <p className="mt-6 text-center text-body-regular text-text-secondary">
           {copy.switchLead} <LinkButton href={switchHref}>{copy.switchAction}</LinkButton>
         </p>
