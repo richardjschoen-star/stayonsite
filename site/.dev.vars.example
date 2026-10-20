@@ -1,0 +1,9 @@
+# Copy to .dev.vars for `npm run dev`. Production values: `cf workers secrets update`.
+BETTER_AUTH_SECRET=   # openssl rand -hex 32
+BETTER_AUTH_URL=http://localhost:5173
+# Optional locally; without them those buttons are hidden / codes print to the terminal.
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+MICROSOFT_CLIENT_ID=
+MICROSOFT_CLIENT_SECRET=
+RESEND_API_KEY=

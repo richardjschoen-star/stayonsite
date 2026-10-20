@@ -33,6 +33,8 @@ type UserRow = {
   color: AvatarColor;
   name: string;
   isSelected?: boolean;
+  /** Passed back through `onPick`; defaults to the name. */
+  id?: string;
 };
 
 const USERS: UserRow[] = [
@@ -79,17 +81,38 @@ function UserMenuItem({ initials, color, name, isSelected, onSelect }: UserRow &
 /** The dropdown's contents — users-with-access list + Add user/Manage
  *  actions — split out so other triggers (e.g. the calendar template's
  *  inbox icon) can open the same panel without duplicating it. */
-export function AccountMenuContent({ onSelect }: { onSelect: () => void }) {
+export function AccountMenuContent({
+  onSelect,
+  rows = USERS,
+  label = "Users with access",
+  onPick,
+  actions,
+}: {
+  onSelect: () => void;
+  /** The rows to list; the template's sample users by default. */
+  rows?: UserRow[];
+  label?: string;
+  onPick?: (id: string) => void;
+  /** Replaces the Add user / Manage buttons. */
+  actions?: ReactNode;
+}) {
   const localize = useTemplateCopy();
   const languageSelector = useTemplateLanguageSelector();
   return localize((
     <>
       {/* Users with access */}
       <div className="flex w-full flex-col gap-1.5 pt-[5px]">
-        <span className="px-2 text-body-medium text-text-secondary">Users with access</span>
+        <span className="px-2 text-body-medium text-text-secondary">{label}</span>
         <div className="flex w-full flex-col gap-1">
-          {USERS.map((user) => (
-            <UserMenuItem key={user.name} {...user} onSelect={onSelect} />
+          {rows.map((user) => (
+            <UserMenuItem
+              key={user.id ?? user.name}
+              {...user}
+              onSelect={() => {
+                onPick?.(user.id ?? user.name);
+                onSelect();
+              }}
+            />
           ))}
         </div>
       </div>
@@ -100,18 +123,22 @@ export function AccountMenuContent({ onSelect }: { onSelect: () => void }) {
       {/* Actions — pb-2 makes the space below the buttons match their
           left/right inset (panel p-2.5 + row px-2 = 18px on every side). */}
       <div className="flex w-full items-center gap-3 px-2 pb-2">
-        <Button variant="secondary" size="small" leadingIcon={RiAddFill} className="flex-1" onClick={onSelect}>
-          Add user
-        </Button>
-        <Button
-          variant="secondary"
-          size="small"
-          leadingIcon={RiEqualizer3Line}
-          className="flex-1"
-          onClick={onSelect}
-        >
-          Manage
-        </Button>
+        {actions ?? (
+          <>
+            <Button variant="secondary" size="small" leadingIcon={RiAddFill} className="flex-1" onClick={onSelect}>
+              Add user
+            </Button>
+            <Button
+              variant="secondary"
+              size="small"
+              leadingIcon={RiEqualizer3Line}
+              className="flex-1"
+              onClick={onSelect}
+            >
+              Manage
+            </Button>
+          </>
+        )}
       </div>
       {languageSelector}
     </>
@@ -123,6 +150,13 @@ export function DashboardUserMenu({
   suppressHover = false,
   onHoverSuppressionEnd,
   avatarClassName,
+  name = "Northwind Freight",
+  initials = "N",
+  avatarColor = "neutral",
+  rows,
+  label,
+  onPick,
+  actions,
 }: {
   collapsed?: boolean;
   /** Prevents expansion from creating a hover state under a stationary pointer. */
@@ -130,6 +164,15 @@ export function DashboardUserMenu({
   /** Re-arms hover after the pointer fully leaves the trigger. */
   onHoverSuppressionEnd?: () => void;
   avatarClassName?: string;
+  /** The current workspace shown on the trigger. */
+  name?: string;
+  initials?: string;
+  avatarColor?: AvatarColor;
+  /** Menu rows, heading, pick handler and footer actions; see AccountMenuContent. */
+  rows?: UserRow[];
+  label?: string;
+  onPick?: (id: string) => void;
+  actions?: (close: () => void) => ReactNode;
 }) {
   const localize = useTemplateCopy();
   const direction = useDirection();
@@ -150,7 +193,7 @@ export function DashboardUserMenu({
   return localize((
     <AriaDialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       <AriaButton
-        aria-label="Northwind Freight"
+        aria-label={name}
         onPointerLeave={() => {
           if (suppressHover) onHoverSuppressionEnd?.();
         }}
@@ -173,10 +216,10 @@ export function DashboardUserMenu({
           collapsed && "w-9 justify-center gap-0 before:-inset-x-[3px]",
         )}
       >
-        <Avatar size="md" color="neutral" initials="N" className={avatarClassName} />
+        <Avatar size="md" color={avatarColor} initials={initials} className={avatarClassName} />
         <Collapsible collapsed={collapsed}>
           <span className="flex items-center gap-0.5">
-            <span className="text-body-medium whitespace-nowrap text-text-primary">Northwind Freight</span>
+            <span className="text-body-medium whitespace-nowrap text-text-primary">{name}</span>
             <ChevronUpDownSmall className="size-4 shrink-0 text-foreground-icon-tertiary" />
           </span>
         </Collapsible>
@@ -194,7 +237,13 @@ export function DashboardUserMenu({
         )}
       >
         <AriaDialog aria-label="Account menu" className="flex flex-col outline-none">
-          <AccountMenuContent onSelect={() => setIsOpen(false)} />
+          <AccountMenuContent
+            onSelect={() => setIsOpen(false)}
+            rows={rows}
+            label={label}
+            onPick={onPick}
+            actions={actions?.(() => setIsOpen(false))}
+          />
         </AriaDialog>
       </AriaPopover>
     </AriaDialogTrigger>

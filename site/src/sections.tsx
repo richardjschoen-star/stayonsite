@@ -29,6 +29,7 @@ import { Tab, TabList, TabPanel, Tabs } from "@/components/base/tabs/tabs";
 import { Textarea } from "@/components/base/textarea/textarea";
 import { TreeView, TreeViewItem } from "@/components/base/tree-view/tree-view";
 import { cx } from "@/utils/cx";
+import { STEPS } from "./process";
 import {
   RiAddLine,
   RiArrowRightLine,
@@ -368,57 +369,6 @@ const REPORT: Stat[] = [
     deltaColor: "neutral",
     tone: "blue",
     caption: "two planned windows",
-  },
-];
-
-const STEPS = [
-  {
-    id: "discover",
-    name: "Discovery",
-    length: "1 week",
-    body: "We sit with the people doing the work, read the actual data and pick the one workflow worth automating first. You get a fixed quote, not an estimate.",
-    gets: [
-      "Shortlist of workflows, ranked by payback",
-      "Data readiness review",
-      "Architecture for your environment",
-      "Fixed price for the build",
-    ],
-  },
-  {
-    id: "prototype",
-    name: "Prototype",
-    length: "2 to 3 weeks",
-    body: "A working version on a copy of your real data, inside your environment, used by a handful of the people who will use it every day.",
-    gets: [
-      "Working agent or copilot",
-      "First eval suite from real examples",
-      "Weekly demo with your team",
-      "Go or no-go with numbers",
-    ],
-  },
-  {
-    id: "production",
-    name: "Production",
-    length: "6 to 10 weeks",
-    body: "Hardening for everyone: guardrails, single sign-on, monitoring and a staged rollout. Nothing ships unless it beats the last release on the eval suite.",
-    gets: [
-      "Eval gate in your CI",
-      "Guardrails and audit log",
-      "Staged rollout plan",
-      "Runbooks and handover docs",
-    ],
-  },
-  {
-    id: "operate",
-    name: "Operate",
-    length: "Monthly",
-    body: "We keep it sharp with you: new eval cases from real failures, model upgrades when they pay off, cost reviews and on-call for incidents.",
-    gets: [
-      "Monthly quality and cost report",
-      "Model upgrades",
-      "On-call for production",
-      "Quarterly roadmap review",
-    ],
   },
 ];
 

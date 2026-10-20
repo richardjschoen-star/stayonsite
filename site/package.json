@@ -8,13 +8,17 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "deploy": "cf deploy"
+    "deploy": "cf deploy",
+    "test": "node --test worker/*.test.ts",
+    "typecheck:worker": "tsc -p tsconfig.worker.json",
+    "db:local": "node scripts/db-local.mjs"
   },
   "dependencies": {
     "@internationalized/date": "^3.12.4",
     "@remixicon/react": "^4.9.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/react-table": "^8.21.3",
+    "better-auth": "^1.7.11",
     "motion": "^12.43.0",
     "react": "^19.3.1",
     "react-aria-components": "^1.22.1",
