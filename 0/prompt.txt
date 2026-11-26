@@ -1,0 +1,16 @@
+agreement and pay tab on click is making the screen go blank. the rest of the app works
+
+---
+
+Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+console-ZLoVQ7DS.js:166 Uncaught ReferenceError: motion is not defined
+    at console-ZLoVQ7DS.js:166:303474
+    at Array.map (<anonymous>)
+    at OnboardingWizard (console-ZLoVQ7DS.js:166:303408)
+    at qo (process-BOw5_7NM.js:8:49229)
+    at Bc (process-BOw5_7NM.js:8:72051)
+    at sl (process-BOw5_7NM.js:8:82971)
+    at $d (process-BOw5_7NM.js:8:128409)
+    at Xd (process-BOw5_7NM.js:8:127456)
+    at Yd (process-BOw5_7NM.js:8:127289)
+    at Ld (process-BOw5_7NM.js:8:123983)
