@@ -603,7 +603,7 @@ function LiveAgreement({
       {/* Apple-like Summary Hero */}
       <div
         layout
-        className="relative overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default p-6"
+        className="relative overflow-hidden rounded-3xl border border-border-button-default bg-background-secondary-default p-6"
       >
         {justCelebrated && (
           <div className="pointer-events-none absolute top-2 right-6">
@@ -643,9 +643,9 @@ function LiveAgreement({
             </span>
             <span className="text-text-primary tabular-nums">{paidPercent}%</span>
           </div>
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-background-tertiary-default">
+          <div className="h-3 w-full overflow-hidden rounded-full border border-border-button-default bg-background-primary-default p-0.5">
             <div
-              className="h-full rounded-full bg-accent-500"
+              className="h-full rounded-full bg-gradient-to-r from-accent-500 to-emerald-400 shadow-[0_0_10px_rgba(59,130,246,0.45)]"
               style={{ width: `${paidPercent}%` }}
             />
           </div>
@@ -655,7 +655,7 @@ function LiveAgreement({
       {/* Two-Column Layout: Contract + Dual Signatures | Milestones & Checkout */}
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         {/* Left: Mutual Contract & Signatures */}
-        <div className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-6">
+        <div className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-secondary-default p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <RiFileTextLine className="size-5 text-accent-500" />
@@ -726,7 +726,7 @@ function LiveAgreement({
         </div>
 
         {/* Right: Milestones & Online Checkout */}
-        <div className="flex flex-col gap-4 rounded-3xl border border-border-button-default bg-background-primary-default p-6">
+        <div className="flex flex-col gap-4 rounded-3xl border border-border-button-default bg-background-secondary-default p-6">
           <div className="flex items-center justify-between">
             <h3 className="text-headline-medium text-text-primary">Payment Milestones</h3>
             <span className="text-caption-1-medium text-text-tertiary">
