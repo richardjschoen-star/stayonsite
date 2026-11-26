@@ -1,0 +1,1 @@
+this things also what ever you worked now needs the same bg change and the top component needs a progress bar or something. learn from the provided design for that component alone
