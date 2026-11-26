@@ -123,7 +123,7 @@ export function AgreementView({ p }: { p: Project }) {
     <div className="px-4 pb-10 sm:px-8">
               {editing && staff ? (
           <div
-            key="wizard"}}}
+            key="wizard"
           >
             <OnboardingWizard p={p} s={s} existing={saved} onDone={() => setEditing(false)} onCancel={saved ? () => setEditing(false) : undefined} />
           </div>
