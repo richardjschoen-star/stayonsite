@@ -310,7 +310,7 @@ function Workspace({ s }: { s: Snapshot }) {
           </Button>
         </SettingsRow>
       </SettingsCard>
-      {s.viewer.staff && (
+      {s.viewer.primary && (
         <Card title="Danger zone">
           <div className="flex items-center justify-between gap-4">
             <p className="text-body-regular text-text-secondary">Delete this client workspace and everything in it.</p>

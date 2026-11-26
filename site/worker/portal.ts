@@ -471,7 +471,7 @@ async function snapshot(c: Ctx, req: Request) {
 
   const body = {
     org: { id: c.org.id, name: c.org.name, slug: c.org.slug, color: c.org.color },
-    viewer: c.v,
+    viewer: { ...c.v, primary: !!(env as unknown as Record<string, string | undefined>).PRIMARY_STAFF_EMAIL && c.v.email.toLowerCase() === (env as unknown as Record<string, string | undefined>).PRIMARY_STAFF_EMAIL!.trim().toLowerCase() },
     people: members.results.map((u) => ({ ...u, staff: u.kind === "staff", kind: undefined })),
     invites: admin ? invites.results : [],
     teams: teams.results.map((r) => out("team", r)),

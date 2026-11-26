@@ -1,8 +1,9 @@
 import type { Perm, Role } from "../../worker/access";
+import type { ProjectAgreement } from "../agreement";
 import type { Gate } from "../process";
 import type { Priority, ProjectColor, ProjectStatus, Status } from "./constants";
 
-export type { Perm, Role };
+export type { Perm, ProjectAgreement, Role };
 
 export interface Me {
   id: string;
@@ -247,7 +248,7 @@ export interface SavedView {
 
 export interface Snapshot {
   org: { id: string; name: string; slug: string; color: ProjectColor };
-  viewer: { id: string; staff: boolean; role: Role | null };
+  viewer: { id: string; staff: boolean; primary?: boolean; role: Role | null };
   people: Person[];
   invites: Invite[];
   teams: Team[];
@@ -262,4 +263,5 @@ export interface Snapshot {
   notifs: Notif[];
   views: SavedView[];
   favorites: { kind: "project" | "task"; ref_id: string }[];
+  agreements: ProjectAgreement[];
 }
