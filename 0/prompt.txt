@@ -1,0 +1,280 @@
+~/Doc/c/stayonsite/site    main  cf auth login && cf deploy
+🍊☁️  cf · v1.0.0-beta.18 · delegated · update available: v1.0.0-rc.6
+─────────────────────────────────────────────────────────────────────
+ℹ You are already logged in.
+Config file: /Users/ar/Library/Preferences/cloudflare/config/default.json
+Token expires: 11/27/2026, 1:55:54 AM
+→ Run cf auth login --force to re-authenticate, or cf auth logout to log out.
+🍊☁️  cf · v1.0.0-beta.18 · delegated · update available: v1.0.0-rc.6
+─────────────────────────────────────────────────────────────────────
+├  Build
+│  Delegating to npx vite build
+vite v8.3.4 building ssr environment for production...
+✓ 736 modules transformed.
+computing gzip size...
+.cloudflare/output/v0/workers/default/bundle/.vite/manifest.json                                3.47 kB │ gzip:   0.59 kB
+.cloudflare/output/v0/workers/default/bundle/assets/kysely-adapter-8uCYXrRu.js                  0.08 kB │ gzip:   0.09 kB
+.cloudflare/output/v0/workers/default/bundle/assets/compiled-query-OOCdSWwF.js                  0.46 kB │ gzip:   0.31 kB │ map:     1.32 kB
+.cloudflare/output/v0/workers/default/bundle/assets/sqlite-adapter-Das2z3Fy.js                  2.18 kB │ gzip:   0.87 kB │ map:     4.15 kB
+.cloudflare/output/v0/workers/default/bundle/assets/node-sqlite-dialect-BTXN3Qu2.js             3.16 kB │ gzip:   1.11 kB │ map:     5.50 kB
+.cloudflare/output/v0/workers/default/bundle/assets/bun-sqlite-dialect-DoOVo4ja-D5tBkc_b.js     3.17 kB │ gzip:   1.12 kB │ map:     5.50 kB
+.cloudflare/output/v0/workers/default/bundle/assets/d1-sqlite-dialect-m0f01-4z-Z4efrwwH.js      5.24 kB │ gzip:   1.76 kB │ map:     9.08 kB
+.cloudflare/output/v0/workers/default/bundle/assets/dist-qExgVll6.js                           14.84 kB │ gzip:   4.11 kB │ map:    24.95 kB
+.cloudflare/output/v0/workers/default/bundle/assets/dist-D4Cstvy9.js                          222.28 kB │ gzip:  40.49 kB │ map:   431.74 kB
+.cloudflare/output/v0/workers/default/bundle/assets/REDACTED.js  283.20 kB │ gzip:  47.57 kB │ map:   537.88 kB
+.cloudflare/output/v0/workers/default/bundle/assets/factory-BNvbEkFo.js                       283.26 kB │ gzip:  64.35 kB │ map:   696.50 kB
+.cloudflare/output/v0/workers/default/bundle/index.js                                         856.92 kB │ gzip: 204.62 kB │ map: 1,654.39 kB
+
+✓ built in 160ms
+vite v8.3.4 building client environment for production...
+✓ 2608 modules transformed.
+computing gzip size...
+.cloudflare/output/v0/workers/default/assets/console/index.html               1.06 kB │ gzip:   0.56 kB
+.cloudflare/output/v0/workers/default/assets/index.html                       2.73 kB │ gzip:   0.98 kB
+.cloudflare/output/v0/workers/default/assets/assets/process-c_nGJOUm.css    213.77 kB │ gzip:  32.08 kB
+.cloudflare/output/v0/workers/default/assets/assets/main-Cvl7V7_G.js        321.73 kB │ gzip:  99.00 kB
+.cloudflare/output/v0/workers/default/assets/assets/console-D3hM-47m.js   1,278.68 kB │ gzip: 364.54 kB
+.cloudflare/output/v0/workers/default/assets/assets/process-C78qi3lT.js   1,395.50 kB │ gzip: 428.97 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[EVAL] Use of direct `eval` function is strongly discouraged as it poses security risks and may cause issues with minification.
+       ╭─[ node_modules/lottie-web/build/player/lottie_svg.js:11559:33 ]
+       │
+ 11559 │       var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
+       │                                 ──┬─  
+       │                                   ╰─── Use of direct `eval` here.
+       │ 
+       │ Help: Consider using indirect eval. For more information, check the documentation: https://rolldown.rs/guide/troubleshooting#avoiding-direct-eval
+───────╯
+
+[EVAL] Use of direct `eval` function is strongly discouraged as it poses security risks and may cause issues with minification.
+       ╭─[ node_modules/lottie-web/build/player/lottie.js:14422:33 ]
+       │
+ 14422 │       var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
+       │                                 ──┬─  
+       │                                   ╰─── Use of direct `eval` here.
+       │ 
+       │ Help: Consider using indirect eval. For more information, check the documentation: https://rolldown.rs/guide/troubleshooting#avoiding-direct-eval
+───────╯
+
+[INEFFECTIVE_DYNAMIC_IMPORT] src/portal/overlays/modals.tsx is dynamically imported by src/portal/shell.tsx but also statically imported by src/portal/keys.ts, src/portal/overlays/drawer.tsx, src/portal/overlays/palette.tsx, src/portal/pages/home.tsx, src/portal/pages/people.tsx, ..., dynamic import will not move module into another chunk.
+
+[INEFFECTIVE_DYNAMIC_IMPORT] src/portal/shell.tsx is dynamically imported by src/portal/overlays/palette.tsx but also statically imported by src/portal/main.tsx, dynamic import will not move module into another chunk.
+
+✓ built in 6.36s
+[PLUGIN_TIMINGS] JavaScript callbacks ran for 6.1s of this 6.3s build (96%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin @rolldown/plugin-babel transform (91%, 5.8s, 119 calls)
+Additional callback time came from the callbacks below and from callbacks under 1s.
+1 callback is listed without a time. Its calls overlapped, so the time inside one call includes work from other calls. To find its cost, profile the build with `node --cpu-prof`:
+  - plugin vite:build-html transform (2 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+◆  Build complete
+│
+├  Deploy
+│  🌀 Building list of assets...
+│  ✨ Read 47 files from the assets directory /Users/ar/Documents/code/stayonsite/site/.cloudflare/output/v0/workers/default/assets
+│  🌀 Starting asset upload...
+│  🌀 Found 5 new or modified static assets to upload. Proceeding with upload...
+│  + /console/index.html
+│  + /assets/main-Cvl7V7_G.js
+│  + /index.html
+│  + /assets/console-D3hM-47m.js
+│  + /assets/process-c_nGJOUm.css
+│  Uploaded 1 of 5 assets
+│  Uploaded 3 of 5 assets
+│  Uploaded 5 of 5 assets
+│  ✨ Success! Uploaded 5 files (32 already uploaded) (4.38 sec)
+│
+│  Total Upload: 1635.58 KiB / gzip: 352.08 KiB
+│  Worker Startup Time: 36 ms
+│  Your Worker has access to the following bindings:
+│  Binding       Resource       
+│  env.EMAIL     Send Email     
+│    hello@stayon.site
+│  env.DB        D1 Database    
+│    inherited
+│  env.FILES     R2 Bucket      
+│    stayonsite-portal-files
+│  env.ASSETS    Assets         
+│
+│  Uploaded site (13.47 sec)
+│  Deployed site triggers (2.71 sec)
+│    stayon.site (custom domain)
+│  Current Version ID: 0a1438e4-2ba2-48ba-b1ee-6c2a0e71814a
+│
+◆  Deploy complete
+
+    ~/Doc/c/stayonsite/site    main  
+
+something happened all the sessions got exited and also it is not letting any user login "Couldn't send the code."
+
+---
+
+~/Doc/c/stayonsite/site    main  cf auth login && cf deploy
+🍊☁️  cf · v1.0.0-beta.18 · delegated · update available: v1.0.0-rc.6
+─────────────────────────────────────────────────────────────────────
+ℹ You are already logged in.
+Config file: /Users/ar/Library/Preferences/cloudflare/config/default.json
+Token expires: 11/27/2026, 1:55:54 AM
+→ Run cf auth login --force to re-authenticate, or cf auth logout to log out.
+🍊☁️  cf · v1.0.0-beta.18 · delegated · update available: v1.0.0-rc.6
+─────────────────────────────────────────────────────────────────────
+├  Build
+│  Delegating to npx vite build
+vite v8.3.4 building ssr environment for production...
+✓ 736 modules transformed.
+computing gzip size...
+.cloudflare/output/v0/workers/default/bundle/.vite/manifest.json                                3.47 kB │ gzip:   0.59 kB
+.cloudflare/output/v0/workers/default/bundle/assets/kysely-adapter-8uCYXrRu.js                  0.08 kB │ gzip:   0.09 kB
+.cloudflare/output/v0/workers/default/bundle/assets/compiled-query-OOCdSWwF.js                  0.46 kB │ gzip:   0.31 kB │ map:     1.32 kB
+.cloudflare/output/v0/workers/default/bundle/assets/sqlite-adapter-Das2z3Fy.js                  2.18 kB │ gzip:   0.87 kB │ map:     4.15 kB
+.cloudflare/output/v0/workers/default/bundle/assets/node-sqlite-dialect-BTXN3Qu2.js             3.16 kB │ gzip:   1.11 kB │ map:     5.50 kB
+.cloudflare/output/v0/workers/default/bundle/assets/bun-sqlite-dialect-DoOVo4ja-D5tBkc_b.js     3.17 kB │ gzip:   1.12 kB │ map:     5.50 kB
+.cloudflare/output/v0/workers/default/bundle/assets/d1-sqlite-dialect-m0f01-4z-Z4efrwwH.js      5.24 kB │ gzip:   1.76 kB │ map:     9.08 kB
+.cloudflare/output/v0/workers/default/bundle/assets/dist-qExgVll6.js                           14.84 kB │ gzip:   4.11 kB │ map:    24.95 kB
+.cloudflare/output/v0/workers/default/bundle/assets/dist-D4Cstvy9.js                          222.28 kB │ gzip:  40.49 kB │ map:   431.74 kB
+.cloudflare/output/v0/workers/default/bundle/assets/REDACTED.js  283.20 kB │ gzip:  47.57 kB │ map:   537.88 kB
+.cloudflare/output/v0/workers/default/bundle/assets/factory-BNvbEkFo.js                       283.26 kB │ gzip:  64.35 kB │ map:   696.50 kB
+.cloudflare/output/v0/workers/default/bundle/index.js                                         856.92 kB │ gzip: 204.62 kB │ map: 1,654.39 kB
+
+✓ built in 160ms
+vite v8.3.4 building client environment for production...
+✓ 2608 modules transformed.
+computing gzip size...
+.cloudflare/output/v0/workers/default/assets/console/index.html               1.06 kB │ gzip:   0.56 kB
+.cloudflare/output/v0/workers/default/assets/index.html                       2.73 kB │ gzip:   0.98 kB
+.cloudflare/output/v0/workers/default/assets/assets/process-c_nGJOUm.css    213.77 kB │ gzip:  32.08 kB
+.cloudflare/output/v0/workers/default/assets/assets/main-Cvl7V7_G.js        321.73 kB │ gzip:  99.00 kB
+.cloudflare/output/v0/workers/default/assets/assets/console-D3hM-47m.js   1,278.68 kB │ gzip: 364.54 kB
+.cloudflare/output/v0/workers/default/assets/assets/process-C78qi3lT.js   1,395.50 kB │ gzip: 428.97 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[EVAL] Use of direct `eval` function is strongly discouraged as it poses security risks and may cause issues with minification.
+       ╭─[ node_modules/lottie-web/build/player/lottie_svg.js:11559:33 ]
+       │
+ 11559 │       var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
+       │                                 ──┬─  
+       │                                   ╰─── Use of direct `eval` here.
+       │ 
+       │ Help: Consider using indirect eval. For more information, check the documentation: https://rolldown.rs/guide/troubleshooting#avoiding-direct-eval
+───────╯
+
+[EVAL] Use of direct `eval` function is strongly discouraged as it poses security risks and may cause issues with minification.
+       ╭─[ node_modules/lottie-web/build/player/lottie.js:14422:33 ]
+       │
+ 14422 │       var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
+       │                                 ──┬─  
+       │                                   ╰─── Use of direct `eval` here.
+       │ 
+       │ Help: Consider using indirect eval. For more information, check the documentation: https://rolldown.rs/guide/troubleshooting#avoiding-direct-eval
+───────╯
+
+[INEFFECTIVE_DYNAMIC_IMPORT] src/portal/overlays/modals.tsx is dynamically imported by src/portal/shell.tsx but also statically imported by src/portal/keys.ts, src/portal/overlays/drawer.tsx, src/portal/overlays/palette.tsx, src/portal/pages/home.tsx, src/portal/pages/people.tsx, ..., dynamic import will not move module into another chunk.
+
+[INEFFECTIVE_DYNAMIC_IMPORT] src/portal/shell.tsx is dynamically imported by src/portal/overlays/palette.tsx but also statically imported by src/portal/main.tsx, dynamic import will not move module into another chunk.
+
+✓ built in 6.36s
+[PLUGIN_TIMINGS] JavaScript callbacks ran for 6.1s of this 6.3s build (96%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin @rolldown/plugin-babel transform (91%, 5.8s, 119 calls)
+Additional callback time came from the callbacks below and from callbacks under 1s.
+1 callback is listed without a time. Its calls overlapped, so the time inside one call includes work from other calls. To find its cost, profile the build with `node --cpu-prof`:
+  - plugin vite:build-html transform (2 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.
+
+◆  Build complete
+│
+├  Deploy
+│  🌀 Building list of assets...
+│  ✨ Read 47 files from the assets directory /Users/ar/Documents/code/stayonsite/site/.cloudflare/output/v0/workers/default/assets
+│  🌀 Starting asset upload...
+│  🌀 Found 5 new or modified static assets to upload. Proceeding with upload...
+│  + /console/index.html
+│  + /assets/main-Cvl7V7_G.js
+│  + /index.html
+│  + /assets/console-D3hM-47m.js
+│  + /assets/process-c_nGJOUm.css
+│  Uploaded 1 of 5 assets
+│  Uploaded 3 of 5 assets
+│  Uploaded 5 of 5 assets
+│  ✨ Success! Uploaded 5 files (32 already uploaded) (4.38 sec)
+│
+│  Total Upload: 1635.58 KiB / gzip: 352.08 KiB
+│  Worker Startup Time: 36 ms
+│  Your Worker has access to the following bindings:
+│  Binding       Resource       
+│  env.EMAIL     Send Email     
+│    hello@stayon.site
+│  env.DB        D1 Database    
+│    inherited
+│  env.FILES     R2 Bucket      
+│    stayonsite-portal-files
+│  env.ASSETS    Assets         
+│
+│  Uploaded site (13.47 sec)
+│  Deployed site triggers (2.71 sec)
+│    stayon.site (custom domain)
+│  Current Version ID: 0a1438e4-2ba2-48ba-b1ee-6c2a0e71814a
+│
+◆  Deploy complete
+
+    ~/Doc/c/stayonsite/site    main  
+
+something happened all the sessions got exited and also it is not letting any user login "Couldn't send the code."
+
+contentscript.js:14974 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 close listeners added. Use emitter.setMaxListeners() to increase limit
+ei @ contentscript.js:14974
+contentscript.js:14974 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 end listeners added. Use emitter.setMaxListeners() to increase limit
+ei @ contentscript.js:14974
+vce701823e78c4301a35b7e07294d87301792088814092:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+2contentscript.js:15051 ObjectMultiplex - orphaned data for stream "app-init-liveness"
+warn @ contentscript.js:15051
+2contentscript.js:15051 ObjectMultiplex - orphaned data for stream "background-liveness"
+warn @ contentscript.js:15051
+/api/auth/email-otp/send-verification-otp:1  Failed to load resource: the server responded with a status of 500 ()
+/api/auth/email-otp/send-verification-otp:1  Failed to load resource: the server responded with a status of 500 ()
+
+---
+
+inbox has Assignments
+Sign-offs
+Billing
+
+why is it there?
+
+---
+
+contentscript.js:14974 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 close listeners added. Use emitter.setMaxListeners() to increase limit
+contentscript.js:14974 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 end listeners added. Use emitter.setMaxListeners() to increase limit
+vce701823e78c4301a35…87301792088814092:1 
+ Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+2
+contentscript.js:15051 ObjectMultiplex - orphaned data for stream "app-init-liveness"
+warn	@	contentscript.js:15051
+2
+contentscript.js:15051 ObjectMultiplex - orphaned data for stream "background-liveness"
+warn	@	contentscript.js:15051
+
+console logs this are
+
+---
+
+also it shows "The console couldn't load." and then the screen comes
+
+---
+
+is this the right fix for the problem? please check on web what is the solid fix for this once
+
+---
+
+apply the real solid fix and deploy it
