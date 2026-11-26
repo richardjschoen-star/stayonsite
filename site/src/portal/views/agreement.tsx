@@ -306,7 +306,7 @@ function OnboardingWizard({
               {step === 0 && (
           <div
             key="step0"
-            className="flex flex-col gap-6 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
+            className="flex flex-col gap-6 rounded-3xl border border-border-button-default bg-background-secondary-default p-5 sm:p-6"
           >
             <div className="grid gap-4 sm:grid-cols-3">
               <Input label="Client Company" value={clientCompany} onChange={setClientCompany} placeholder="Acme Corp" />
@@ -380,7 +380,7 @@ function OnboardingWizard({
         {step === 1 && (
           <div
             key="step1"
-            className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
+            className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-secondary-default p-5 sm:p-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -427,7 +427,7 @@ function OnboardingWizard({
         {step === 2 && (
           <div
             key="step2"
-            className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
+            className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-secondary-default p-5 sm:p-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
