@@ -1,0 +1,47 @@
+{
+  "cli_version": "0.13.4",
+  "checkpoint_id": "01M8CHB368QE83K4CY2JN1WXQM",
+  "session_id": "f15a2a40-241b-43a3-9d26-7c3d738a57f2",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-26T18:19:33.008288Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 2,
+  "files_touched": [
+    "site/src/portal/types.ts"
+  ],
+  "agent": "Antigravity",
+  "model": "gemini-4-hydrogen-low",
+  "turn_id": "55a0f217c76a",
+  "token_usage": {
+    "input_tokens": 17110,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 762479,
+    "output_tokens": 1636,
+    "api_call_count": 7
+  },
+  "session_token_usage": {
+    "input_tokens": 693083,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 6807681,
+    "output_tokens": 24880,
+    "api_call_count": 110
+  },
+  "redaction": {
+    "replacements": 3,
+    "layers": {
+      "betterleaks": 1,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 2,
+      "credentialed_uri": 0,
+      "entropy": 1,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "session_metrics": {
+    "turn_count": 37
+  }
+}
