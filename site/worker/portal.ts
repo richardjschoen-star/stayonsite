@@ -1598,27 +1598,119 @@ function buildInvoicePdf(d: {
   status: string;
   note: string;
 }): Uint8Array {
-  const lines = [
-    "BT",
-    "/F2 20 Tf 56 750 Td (STAYONSITE) Tj",
-    "/F1 10 Tf 0 -18 Td (stayon.site  |  hello@stayon.site) Tj",
-    "/F2 16 Tf 0 -42 Td (INVOICE " + pdfEsc(d.number) + ") Tj",
-    "/F1 11 Tf 0 -28 Td (Status: " + pdfEsc(d.status.toUpperCase()) + ") Tj",
-    "0 -18 Td (Client: " + pdfEsc(d.orgName) + ") Tj",
-    "0 -18 Td (Project: " + pdfEsc(d.projectName) + ") Tj",
-    "0 -18 Td (Issued: " + pdfEsc(d.issued) + "    Due: " + pdfEsc(d.due) + ") Tj",
-    "0 -32 Td (--------------------------------------------------------------------) Tj",
-    "/F2 12 Tf 0 -22 Td (Description: " + pdfEsc(d.note || "Project Services") + ") Tj",
-    "/F2 14 Tf 0 -28 Td (Total Amount: " + pdfEsc(d.amount) + ") Tj",
-    "/F1 10 Tf 0 -36 Td (--------------------------------------------------------------------) Tj",
-    "0 -22 Td (Thank you for your business with StayonSite.) Tj",
-    "ET",
-  ].join("\n");
+  // Structured B2B software-services invoice (Tata/TCS-style grid layout, A4/Letter 612x792)
+  const cmds: string[] = [];
+  const text = (font: "F1" | "F2", size: number, x: number, y: number, str: string) =>
+    cmds.push(`BT /${font} ${size} Tf ${x} ${y} Td (${pdfEsc(str)}) Tj ET`);
+  const rect = (x: number, y: number, w: number, h: number) => cmds.push(`${x} ${y} ${w} ${h} re S`);
+  const line = (x1: number, y1: number, x2: number, y2: number) => cmds.push(`${x1} ${y1} m ${x2} ${y2} l S`);
+  const fillRect = (x: number, y: number, w: number, h: number, gray: number) =>
+    cmds.push(`q ${gray} g ${x} ${y} ${w} ${h} re f Q`);
+
+  cmds.push("0.6 w 0.15 0.15 0.15 RG 0.1 0.1 0.1 rg");
+
+  // Top title bar
+  text("F2", 11, 275, 756, "INVOICE");
+  text("F1", 8, 462, 756, "ORIGINAL FOR RECIPIENT");
+
+  // Outer frame (40, 56 to 572, 746)
+  rect(40, 56, 532, 690);
+
+  // Header split: Supplier (left) | Invoice Meta (right)
+  line(40, 650, 572, 650);
+  line(310, 650, 310, 746);
+  line(310, 698, 572, 698);
+  line(440, 650, 440, 746);
+
+  // Supplier block
+  text("F2", 14, 52, 724, "STAYONSITE");
+  text("F1", 9, 52, 708, "Software & Digital Product Studio");
+  text("F1", 9, 52, 694, "Web: stayon.site");
+  text("F1", 9, 52, 680, "Email: hello@stayon.site");
+  text("F1", 8, 52, 662, "SAC: 998314 (IT Design & Development)");
+
+  // Invoice metadata grid
+  text("F1", 8, 320, 732, "Invoice #:");
+  text("F2", 10, 320, 716, d.number);
+  text("F1", 8, 450, 732, "Invoice Date:");
+  text("F2", 10, 450, 716, d.issued);
+
+  text("F1", 8, 320, 684, "Project:");
+  text("F2", 9, 320, 668, d.projectName.slice(0, 22));
+  text("F1", 8, 450, 684, "Due Date:");
+  text("F2", 10, 450, 668, d.due);
+
+  // Customer / Billing details row
+  line(40, 576, 572, 576);
+  line(310, 576, 310, 650);
+  text("F1", 8, 52, 634, "Billed To:");
+  text("F2", 11, 52, 618, d.orgName);
+  text("F1", 9, 52, 602, "Project Workspace: " + d.projectName);
+  text("F1", 8, 320, 634, "Status:");
+  text("F2", 11, 320, 618, d.status.toUpperCase());
+  text("F1", 8, 320, 598, "Currency / Settlement:");
+  text("F1", 9, 320, 586, d.amount.split(" ")[0] || "USD");
+
+  // Line items table header
+  fillRect(40.5, 550, 531, 26, 0.94);
+  line(40, 550, 572, 550);
+  line(70, 300, 70, 576);
+  line(335, 300, 335, 576);
+  line(405, 300, 405, 576);
+  line(470, 300, 470, 576);
+
+  text("F2", 9, 50, 560, "#");
+  text("F2", 9, 80, 560, "Item / Service Description");
+  text("F2", 9, 345, 560, "SAC");
+  text("F2", 9, 415, 560, "Qty");
+  text("F2", 9, 480, 560, "Amount");
+
+  // Line item row
+  text("F1", 9, 52, 528, "1");
+  text("F2", 10, 80, 528, d.projectName + " - Software Services");
+  text("F1", 9, 80, 512, (d.note || "Milestone / Project Services").slice(0, 52));
+  text("F1", 9, 345, 528, "998314");
+  text("F1", 9, 415, 528, "1");
+  text("F2", 10, 480, 528, d.amount);
+
+  // Totals bar
+  line(40, 300, 572, 300);
+  line(40, 266, 572, 266);
+  text("F1", 9, 52, 280, "Total Items / Qty: 1 / 1.00");
+  text("F2", 11, 355, 280, "Total:");
+  text("F2", 12, 465, 280, d.amount);
+
+  // Payment status strip
+  line(40, 236, 572, 236);
+  text("F2", 9, 52, 248, "Payment Status: " + d.status.toUpperCase());
+  text("F1", 8, 355, 248, "No GST charged (Non-GST / Export Supply)");
+
+  // Bottom 2-column footer: Payment Details | Authorized Signatory
+  line(40, 128, 572, 128);
+  line(340, 128, 340, 236);
+  text("F2", 9, 52, 218, "Payment & Contact Details:");
+  text("F1", 9, 52, 202, "Beneficiary: StayonSite");
+  text("F1", 9, 52, 188, "Portal: https://stayon.site/console");
+  text("F1", 9, 52, 174, "Billing Support: hello@stayon.site");
+  text("F1", 8, 52, 148, "Reference: " + d.number);
+
+  text("F1", 8, 430, 218, "For STAYONSITE");
+  text("F2", 9, 430, 146, "Authorized Signatory");
+
+  // Terms & Notes
+  text("F2", 8, 52, 112, "Notes & Terms:");
+  text("F1", 8, 52, 98, "1. Services rendered as per the accepted Master Services Agreement.");
+  text("F1", 8, 52, 85, "2. Please quote Invoice # " + d.number + " in all correspondence.");
+  text("F1", 8, 52, 72, "3. This is a computer-generated invoice and requires no physical signature.");
+
+  text("F1", 8, 40, 40, "Page 1 / 1    This is a digitally generated document from StayonSite.");
+
+  const stream = cmds.join("\n");
   const objs = [
     "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n",
     "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n",
     "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >> endobj\n",
-    `4 0 obj << /Length ${lines.length} >>\nstream\n${lines}\nendstream\nendobj\n`,
+    `4 0 obj << /Length ${stream.length} >>\nstream\n${stream}\nendstream\nendobj\n`,
     "5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n",
     "6 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> endobj\n",
   ];
