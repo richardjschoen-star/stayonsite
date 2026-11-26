@@ -1,0 +1,90 @@
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+MICROSOFT_CLIENT_ID=
+MICROSOFT_CLIENT_SECRET=
+RESEND_API_KEY=
+
+fetch this vars from the cloudflare, we have cf installed in the system. fetch and put it in local .dev.vars file
+
+---
+
+authenticate to cf I will approve and then take it from cf cli
+
+---
+
+I have setup microsoft and google auth manually, tell me why is it showing like this "{"message":"This email hasn't been invited to StayonSite."}" while loggin through google
+
+---
+
+who and all has the right to invite?
+
+---
+
+is the first user created from code?
+
+---
+
+don't we have featureto remove user from the portal?
+
+---
+
+how to remove a member from an or
+
+---
+
+give me the url
+
+---
+
+who is who here
+
+---
+
+owner will be able to remove stayonsite? please check that?
+
+---
+
+nice, how to remove the member? its not visible to remove
+
+---
+
+what if I want to remove the stayonsite member itself?
+
+---
+
+just because they are just employee and they will be there today and not there tomorrow, so option should be there and also for hello@stayon.site its showing ceo who set that? and how to set that?
+
+---
+
+yes please how will you keep only me as permanent member? will you be hardcoding it
+
+---
+
+yes please how will you keep only me as permanent member? will you be hardcoding it and if yes will it not be some sort of PII data security issue in the code>
+
+---
+
+please do it as I want hello@stayon.site to be permanent and no one should be able to delete it, and add a staff removal feature as discussed ask questions if required
+
+---
+
+give me the command to run
+
+---
+
+printf "hello@stayon.site" | cf workers secrets update PRIMARY_STAFF_EMAIL --worker site
+🍊☁️  cf · v1.0.0-beta.18 · delegated · update available: v1.0.0-rc.6
+─────────────────────────────────────────────────────────────────────
+
+┌ Error
+│ --type is required (one of: secret_text, secret_key). Pass --type
+│ <value> or run interactively.
+└
+
+---
+
+now committing and pushing it will fix it right?
+
+---
+
+please do it then

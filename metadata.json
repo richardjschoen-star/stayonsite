@@ -3,8 +3,10 @@
   "checkpoint_id": "01M8C892P9F6RKRYZRQT7V48GY",
   "strategy": "manual-commit",
   "branch": "feat/client-console",
-  "checkpoints_count": 2,
+  "checkpoints_count": 20,
   "files_touched": [
+    "site/cloudflare.config.ts",
+    "site/src/portal/pages/people.tsx",
     "site/src/portal/store.ts",
     "site/worker/portal.ts"
   ],
@@ -20,22 +22,28 @@
       "transcript": "/1/full.jsonl",
       "content_hash": "/1/content_hash.txt",
       "prompt": ""
+    },
+    {
+      "metadata": "/2/metadata.json",
+      "transcript": "/2/full.jsonl",
+      "content_hash": "/2/content_hash.txt",
+      "prompt": "/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 7767,
+    "input_tokens": 265366,
     "cache_creation_tokens": 0,
-    "cache_read_tokens": 98558,
-    "output_tokens": 1062,
-    "api_call_count": 3
+    "cache_read_tokens": 1965627,
+    "output_tokens": 12557,
+    "api_call_count": 52
   },
   "redaction": {
-    "replacements": 0,
+    "replacements": 2,
     "layers": {
-      "betterleaks": 0,
+      "betterleaks": 1,
       "connection_string": 0,
       "credential_key": 0,
-      "credential_value": 0,
+      "credential_value": 2,
       "credentialed_uri": 0,
       "entropy": 0,
       "key_context": 0,
