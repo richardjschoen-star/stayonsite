@@ -3,7 +3,7 @@
   "checkpoint_id": "01M8C892P9F6RKRYZRQT7V48GY",
   "strategy": "manual-commit",
   "branch": "feat/client-console",
-  "checkpoints_count": 1,
+  "checkpoints_count": 2,
   "files_touched": [
     "site/src/portal/store.ts",
     "site/worker/portal.ts"
@@ -14,14 +14,20 @@
       "transcript": "/0/full.jsonl",
       "content_hash": "/0/content_hash.txt",
       "prompt": ""
+    },
+    {
+      "metadata": "/1/metadata.json",
+      "transcript": "/1/full.jsonl",
+      "content_hash": "/1/content_hash.txt",
+      "prompt": ""
     }
   ],
   "token_usage": {
-    "input_tokens": 5338,
+    "input_tokens": 7767,
     "cache_creation_tokens": 0,
-    "cache_read_tokens": 75960,
-    "output_tokens": 1008,
-    "api_call_count": 2
+    "cache_read_tokens": 98558,
+    "output_tokens": 1062,
+    "api_call_count": 3
   },
   "redaction": {
     "replacements": 0,
