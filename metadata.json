@@ -1,0 +1,51 @@
+{
+  "cli_version": "0.13.4",
+  "checkpoint_id": "01M8C2YD53MP9DAEW2NFA3D0C2",
+  "strategy": "manual-commit",
+  "branch": "feat/client-console",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".gitignore",
+    "Stayon-site-logo.png",
+    "assets/Stayon-site-logo.png",
+    "assets/stayon.site-mark-2.png",
+    "assets/stayon.site.logo.png",
+    "assets/stayon.site.png",
+    "assets/stayonsite-mark-1.png",
+    "assets/stayonsite-mark.png",
+    "stayon.site-mark-2.png",
+    "stayon.site.logo.png",
+    "stayon.site.png",
+    "stayonsite-mark-1.png",
+    "stayonsite-mark.png"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 28745,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 43975,
+    "output_tokens": 272,
+    "api_call_count": 3
+  },
+  "redaction": {
+    "replacements": 0,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 0,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "cli_version": "0.13.4",
+  "checkpoint_id": "01M8C2YD53MP9DAEW2NFA3D0C2",
+  "session_id": "c7f24f38-2193-4e4b-8c43-9f4439378313",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-26T14:07:56.7846Z",
+  "branch": "feat/client-console",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".gitignore",
+    "Stayon-site-logo.png",
+    "assets/Stayon-site-logo.png",
+    "assets/stayon.site-mark-2.png",
+    "assets/stayon.site.logo.png",
+    "assets/stayon.site.png",
+    "assets/stayonsite-mark-1.png",
+    "assets/stayonsite-mark.png",
+    "stayon.site-mark-2.png",
+    "stayon.site.logo.png",
+    "stayon.site.png",
+    "stayonsite-mark-1.png",
+    "stayonsite-mark.png"
+  ],
+  "agent": "Antigravity",
+  "model": "gemini-4-hydrogen-low",
+  "turn_id": "988793bbad44",
+  "token_usage": {
+    "input_tokens": 28745,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 43975,
+    "output_tokens": 272,
+    "api_call_count": 3
+  },
+  "session_token_usage": {
+    "input_tokens": 28745,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 43975,
+    "output_tokens": 272,
+    "api_call_count": 3
+  },
+  "redaction": {
+    "replacements": 0,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 0,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  }
+}
