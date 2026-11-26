@@ -1,0 +1,172 @@
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+MICROSOFT_CLIENT_ID=
+MICROSOFT_CLIENT_SECRET=
+RESEND_API_KEY=
+
+fetch this vars from the cloudflare, we have cf installed in the system. fetch and put it in local .dev.vars file
+
+---
+
+authenticate to cf I will approve and then take it from cf cli
+
+---
+
+I have setup microsoft and google auth manually, tell me why is it showing like this "{"message":"This email hasn't been invited to StayonSite."}" while loggin through google
+
+---
+
+who and all has the right to invite?
+
+---
+
+is the first user created from code?
+
+---
+
+don't we have featureto remove user from the portal?
+
+---
+
+how to remove a member from an or
+
+---
+
+give me the url
+
+---
+
+who is who here
+
+---
+
+owner will be able to remove stayonsite? please check that?
+
+---
+
+nice, how to remove the member? its not visible to remove
+
+---
+
+what if I want to remove the stayonsite member itself?
+
+---
+
+just because they are just employee and they will be there today and not there tomorrow, so option should be there and also for hello@stayon.site its showing ceo who set that? and how to set that?
+
+---
+
+yes please how will you keep only me as permanent member? will you be hardcoding it
+
+---
+
+yes please how will you keep only me as permanent member? will you be hardcoding it and if yes will it not be some sort of PII data security issue in the code>
+
+---
+
+please do it as I want hello@stayon.site to be permanent and no one should be able to delete it, and add a staff removal feature as discussed ask questions if required
+
+---
+
+give me the command to run
+
+---
+
+printf "hello@stayon.site" | cf workers secrets update PRIMARY_STAFF_EMAIL --worker site
+🍊☁️  cf · v1.0.0-beta.18 · delegated · update available: v1.0.0-rc.6
+─────────────────────────────────────────────────────────────────────
+
+┌ Error
+│ --type is required (one of: secret_text, secret_key). Pass --type
+│ <value> or run interactively.
+└
+
+---
+
+now committing and pushing it will fix it right?
+
+---
+
+please do it then
+
+---
+
+what is the git remote url
+
+---
+
+@[stayonsite#1:Add client console: invite-only portal for StayonSite and its clients] why it this open?
+
+---
+
+it should have been merged or wantedly kept without merging please checl
+
+---
+
+you do it by yourself
+
+---
+
+what ans all will be affected with this
+
+---
+
+now we are in main branch right?
+
+---
+
+check which branch triggers deployment
+
+---
+
+i merged pr 1 today with that what is merged please check
+
+---
+
+this is already there before merging and deploying? then why was this not merged and still all this features were available?
+
+---
+
+is it possible to create a workflow to deply it? if yes what is the reason we didnt set it up? please check earlier session to find out the answer
+
+---
+
+check entire io session history
+
+---
+
+what we loose with this workflow, what disadvantage we have?
+
+---
+
+then do cf deploy and cf d1 migration by youself
+
+---
+
+Background Task Output
+cd site && cf d1 migrations apply 7a6e8183-ecf7-4a46-8040-2531a20d69ce && cf deploy
+🍊☁️  cf · v1.0.0-beta.18 · delegated · update available: v1.0.0-rc.6
+─────────────────────────────────────────────────────────────────────
+Cloudflare collects anonymous cf usage telemetry. Run `cf cli telemetry disable` to opt out.
+│
+⠋  Preparing [0s]⠙  Preparing [0s]⠹  Preparing [0s]⠸  Preparing [0s]⠼  Preparing [0s]⠴  Preparing [0s]⠦  Preparing [0s]⠧  Preparing [0s]⠇  Preparing [0s]⠏  Preparing [0s]⠋  Preparing [0s]⠙  Preparing [0s]⠹  Preparing [1s]⠸  Preparing [1s]⠼  Preparing [1s]⠴  Preparing [1s]⠦  Preparing [1s]⠧  Preparing [1s]⠇  Preparing [1s]⠏  Preparing [1s]⠋  Preparing [1s]⠙  Preparing [1s]⠹  Preparing [1s]⠸  Preparing [1s]⠼  Preparing [2s]⠴  Preparing [2s]◇  Preparing [2s]
+
+approve it
+
+---
+
+remove this ui and commit it
+
+---
+
+remove that image like area which is left blue shaded remove that alone
+
+---
+
+explain which ine you removed?
+
+---
+
+1. lets say I accept the contract and then click on edit terms then when we come to accept the agreement it is showing as Accepted by Ami which is wrong functionality right? 
+2. and also there is unnecessary transitions which the rest of the apps doesn't please remove that as well
+3. remove that image like area which is left blue shaded remove that alone in all the screens inside agreement and pay please
