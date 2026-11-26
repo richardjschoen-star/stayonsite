@@ -1640,14 +1640,14 @@ async function invoicePdf(me: Me, invoiceId: string, req: Request) {
   if (!row) notFound();
   const c = await orgCtx(me, String(row.org_id), req);
   if (!isOrgAdmin(c.v)) fail(403, "Only admins can download invoices");
-  const proj = row.project_id ? c.projects.find((p) => p.id === row.project_id) : null;
+  const proj = row.project_id ? await first<{ name: string }>("SELECT name FROM project WHERE id = ?", row.project_id) : null;
   const cents = Number(row.amount_cents ?? 0);
   const cur = String(row.currency || "USD");
   const amount = `${cur} ${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const bytes = buildInvoicePdf({
     number: String(row.number || "INVOICE"),
-    orgName: c.org.name,
-    projectName: proj ? String(proj.name) : "General",
+    orgName: String(c.org.name),
+    projectName: proj ? proj.name : "General",
     issued: String(row.issued || "—"),
     due: String(row.due || "—"),
     amount,
