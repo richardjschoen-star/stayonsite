@@ -640,9 +640,6 @@ function LiveAgreement({
         )}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/10">
-              {paidPercent >= 100 ? <SuccessCheckLottie className="size-12" /> : <ContractSealLottie className="size-12" />}
-            </div>
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-accent-500/10 px-2.5 py-0.5 text-caption-1-semibold text-accent-500">{typeLabel}</span>
