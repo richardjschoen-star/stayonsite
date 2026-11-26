@@ -46,14 +46,16 @@ type IconComponent = ComponentType<{
   "aria-hidden"?: boolean | "true" | "false";
 }>;
 
-type MenuRow = {
+export type MenuRow = {
   icon: IconComponent;
   label: string;
   badge?: string;
   isSelected?: boolean;
+  /** Runs before the menu closes. */
+  onSelect?: () => void;
 };
 
-type MenuGroup = {
+export type MenuGroup = {
   id: string;
   label?: string;
   items: MenuRow[];
@@ -104,7 +106,7 @@ function Collapsible({ collapsed, children }: { collapsed: boolean; children: Re
   ));
 }
 
-function TeamMenuItem({ icon: Icon, label, badge, isSelected, onSelect }: MenuRow & { onSelect: () => void }) {
+function TeamMenuItem({ icon: Icon, label, badge, isSelected, onSelect }: Omit<MenuRow, "onSelect"> & { onSelect: () => void }) {
   const localize = useTemplateCopy();
   return localize((
     <AriaButton
@@ -145,11 +147,25 @@ export function DashboardTeamMenu({
   collapsed = false,
   className,
   showThemeToggle = false,
+  name = "StayonSite",
+  email = "console@stayon.site",
+  avatar,
+  groups = GROUPS,
+  footer = "StayonSite",
+  version = "v1.0.1",
 }: {
   collapsed?: boolean;
   className?: string;
   /** Show appearance controls inside the menu instead of the sidebar. */
   showThemeToggle?: boolean;
+  /** Who the card is for; the template's team by default. */
+  name?: string;
+  email?: string;
+  /** Replaces the mark avatar, e.g. the signed-in person's initials. */
+  avatar?: ReactNode;
+  groups?: MenuGroup[];
+  footer?: string;
+  version?: string;
 }) {
   const localize = useTemplateCopy();
   const languageSelector = useTemplateLanguageSelector();
@@ -164,7 +180,7 @@ export function DashboardTeamMenu({
   return localize((
     <AriaDialogTrigger isOpen={isOpen} onOpenChange={setIsOpen}>
       <AriaButton
-        aria-label="StayonSite"
+        aria-label={name}
         className={cx(
           "flex cursor-pointer items-center overflow-hidden outline-none",
           "border-2 border-transparent hover:border-border-button-hover",
@@ -177,11 +193,11 @@ export function DashboardTeamMenu({
         )}
       >
         <span className="flex min-w-0 items-center gap-2">
-          <Avatar size="md" color="blue" src="/mark.png" alt="StayonSite" />
+          {avatar ?? <Avatar size="md" color="blue" src="/mark.png" alt={name} />}
           <Collapsible collapsed={collapsed}>
             <span className="flex min-w-0 flex-col items-start justify-center">
-              <span className="text-body-medium whitespace-nowrap text-text-primary">StayonSite</span>
-              <span className="text-body-regular whitespace-nowrap text-text-secondary">console@stayon.site</span>
+              <span className="text-body-medium whitespace-nowrap text-text-primary">{name}</span>
+              <span className="text-body-regular whitespace-nowrap text-text-secondary">{email}</span>
             </span>
           </Collapsible>
         </span>
@@ -205,19 +221,19 @@ export function DashboardTeamMenu({
           "data-[exiting]:opacity-0 data-[exiting]:scale-95 data-[exiting]:blur-[2px]",
         )}
       >
-        <AriaDialog aria-label="StayonSite menu" className="flex flex-col gap-[7px] outline-none">
+        <AriaDialog aria-label={`${name} menu`} className="flex flex-col gap-[7px] outline-none">
           {/* Header */}
           <div className="flex w-full items-center gap-2 px-2 pt-1">
-            <Avatar size="md" color="blue" src="/mark.png" alt="StayonSite" />
+            {avatar ?? <Avatar size="md" color="blue" src="/mark.png" alt={name} />}
             <div className="flex min-w-0 flex-col items-start justify-center">
-              <span className="text-body-medium whitespace-nowrap text-text-primary">StayonSite</span>
-              <span className="text-body-regular whitespace-nowrap text-text-secondary">console@stayon.site</span>
+              <span className="text-body-medium whitespace-nowrap text-text-primary">{name}</span>
+              <span className="text-body-regular whitespace-nowrap text-text-secondary">{email}</span>
             </div>
           </div>
 
           {/* Grouped sidebar-style rows */}
           <div className="flex w-full flex-col">
-            {GROUPS.map((group, index) => (
+            {groups.map((group, index) => (
               <Group key={group.id} group={group} showDivider={index > 0} onSelect={() => setIsOpen(false)}>
                 {showThemeToggle && group.id === "personal" && (
                   <div className="flex w-full items-center justify-between gap-2.5 rounded-2lg px-2 py-1">
@@ -235,9 +251,9 @@ export function DashboardTeamMenu({
 
           {/* Footer */}
           <div className="flex w-full items-center justify-between px-2 pt-1 pb-2">
-            <span className="text-body-2-medium whitespace-nowrap text-text-tertiary">StayonSite</span>
+            <span className="text-body-2-medium whitespace-nowrap text-text-tertiary">{footer}</span>
             <span className="inline-flex items-center justify-center rounded-sm bg-background-tertiary-default px-1 py-px text-body-2-medium whitespace-nowrap text-text-tertiary">
-              v1.0.1
+              {version}
             </span>
           </div>
         </AriaDialog>
@@ -257,7 +273,14 @@ function Group({ group, showDivider, onSelect, children }: { group: MenuGroup; s
         )}
         <div className="flex w-full flex-col gap-1">
           {group.items.map((item) => (
-            <TeamMenuItem key={item.label} {...item} onSelect={onSelect} />
+            <TeamMenuItem
+              key={item.label}
+              {...item}
+              onSelect={() => {
+                item.onSelect?.();
+                onSelect();
+              }}
+            />
           ))}
           {children}
         </div>

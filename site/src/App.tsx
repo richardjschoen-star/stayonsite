@@ -1,8 +1,6 @@
-import { AuthCard } from "@/components/application/auth/auth-card";
 import { ThemeToggle } from "@/components/application/theme/theme-toggle";
 import { Badge } from "@/components/base/badges/badge";
 import { ButtonLink } from "@/components/base/buttons/button";
-import { CloseButton } from "@/components/base/buttons/close-button";
 import { IconButton } from "@/components/base/buttons/icon-button";
 import { LinkButton } from "@/components/base/buttons/link-button";
 import { InputBase, TextField } from "@/components/base/input/input";
@@ -25,7 +23,6 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import { Dialog, Modal, ModalOverlay } from "react-aria-components";
 import { Capabilities } from "./capabilities";
 import { Console } from "./console";
 import { Contact, Faq, Process, Testimonial, Work } from "./sections";
@@ -219,48 +216,7 @@ function CommandMenu({
   );
 }
 
-/** Client console sign-in, with BoardUI's modal motion. */
-function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  return (
-    <ModalOverlay
-      isOpen={open}
-      onOpenChange={(o) => !o && onClose()}
-      isDismissable
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 transition-opacity duration-300 ease-out data-[entering]:opacity-0 data-[exiting]:opacity-0"
-    >
-      <Modal className="transform-gpu transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-[opacity,transform,filter] data-[entering]:scale-[0.85] data-[entering]:opacity-0 data-[entering]:blur-[4px] data-[exiting]:scale-[0.85] data-[exiting]:opacity-0 data-[exiting]:blur-[4px]">
-        <Dialog
-          aria-label="Sign in to the client console"
-          className="relative outline-none"
-        >
-          <CloseButton
-            size="sm"
-            aria-label="Close"
-            onClick={onClose}
-            className="absolute end-4 top-4 z-10"
-          />
-          <AuthCard
-            mode="signin"
-            layout="stacked"
-            title="Sign in to your console"
-            description="For StayonSite clients. Use your company's single sign-on."
-            providers={["okta", "microsoft", "google"]}
-            onSubmit={onClose}
-            onProvider={onClose}
-          />
-        </Dialog>
-      </Modal>
-    </ModalOverlay>
-  );
-}
-
-function Nav({
-  onSearch,
-  onLogin,
-}: {
-  onSearch: () => void;
-  onLogin: () => void;
-}) {
+function Nav({ onSearch }: { onSearch: () => void }) {
   return (
     <header className="sticky top-0 z-40">
       {/* Bencho's progressive blur: the bar dissolves into the page instead of ending on a line. */}
@@ -304,7 +260,7 @@ function Nav({
           <ThemeToggle appearance="segmented" size="small" />
           <LinkButton
             variant="secondary"
-            onClick={onLogin}
+            href="/console"
             className="hidden px-2 sm:inline-flex"
           >
             Client login
@@ -496,7 +452,6 @@ function Footer() {
 export default function App() {
   const [running, setRunning] = useState(true);
   const [search, setSearch] = useState(false);
-  const [login, setLogin] = useState(false);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -527,7 +482,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-background-full text-text-primary">
-        <Nav onSearch={() => setSearch(true)} onLogin={() => setLogin(true)} />
+        <Nav onSearch={() => setSearch(true)} />
         <main>
           <Hero running={running} onRunningChange={setRunning} />
           <Capabilities />
@@ -540,7 +495,6 @@ export default function App() {
         </main>
         <Footer />
         <CommandMenu open={search} onClose={() => setSearch(false)} />
-        <LoginModal open={login} onClose={() => setLogin(false)} />
       </div>
     </MotionConfig>
   );
