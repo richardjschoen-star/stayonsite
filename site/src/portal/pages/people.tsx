@@ -7,7 +7,7 @@ import { ActivityList } from "../overlays/drawer";
 import { confirm, inviteModal, teamModal } from "../overlays/modals";
 import { Pick } from "../overlays/pickers";
 import { navigate, to, useRoute } from "../router";
-import { isAdmin, liveTasks, openProjects, personOf, remove, revokeInvite, setMemberRole, useSnap } from "../store";
+import { isAdmin, liveTasks, openProjects, personOf, remove, removeStaff, revokeInvite, setMemberRole, useSnap } from "../store";
 import type { Person, Role, Snapshot } from "../types";
 import { Card, Empty, Link, PageHeader, PersonAvatar, ProjectIcon, SearchField, timeAgo, tint, ICONS } from "../ui";
 import { TaskList } from "../views/list";
@@ -29,7 +29,22 @@ const MATRIX: [string, boolean[]][] = [
 function RoleCell({ s, p }: { s: Snapshot; p: Person }) {
   const me = s.viewer;
   const owners = s.people.filter((x) => x.role === "owner").length;
-  if (p.staff) return <span className="text-body-2-medium text-text-secondary">StayonSite</span>;
+  if (p.staff) {
+    if (!me.staff || p.id === me.id) return <span className="text-body-2-medium text-text-secondary">StayonSite</span>;
+    return (
+      <Pick
+        label="Role"
+        options={[{ id: "staff", label: "StayonSite" }, { id: "remove", label: "Remove from StayonSite" }]}
+        value="staff"
+        onChange={(r) =>
+          r === "remove" &&
+          confirm({ title: `Remove ${p.name}?`, body: "They lose access to StayonSite and all client workspaces right away.", action: "Remove", danger: true }).then((ok) => ok && removeStaff(p.id))
+        }
+      >
+        <span className="text-body-2-medium text-text-secondary">StayonSite</span>
+      </Pick>
+    );
+  }
   const canChange = (me.staff || me.role === "owner" || (me.role === "admin" && p.role !== "owner")) && !(p.role === "owner" && owners <= 1);
   const roles = (["owner", "admin", "member", "guest"] as Role[]).filter((r) => r !== "owner" || me.staff || me.role === "owner");
   return (

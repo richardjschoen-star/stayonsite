@@ -14,12 +14,16 @@ import {
   TEMPLATES,
   VIEW_TYPES,
 } from "../src/portal/constants";
+import { defaultMilestones, type PaymentMilestone, type ProjectType } from "../src/agreement";
 import { ENGAGEMENT, GATES } from "../src/process";
 import {
   atLeast,
+  canAcceptAgreementSide,
   canDecide,
   canDeleteComment,
+  canEditAgreement,
   canEditComment,
+  canPayMilestone,
   canSetRole,
   isOrgAdmin,
   projectPerm,
@@ -95,6 +99,7 @@ const update = (table: string, id: string, patch: Row) => {
 
 const JSON_COLS: Record<string, string[]> = {
   project: ["members", "milestones"],
+  project_agreement: ["milestones"],
   task: ["labels", "deps", "subtasks"],
   comment: ["reactions"],
   stage: ["items"],
@@ -422,7 +427,7 @@ async function snapshot(c: Ctx, req: Request) {
   if (req.headers.get("if-none-match") === tag) return new Response(null, { status: 304, headers: { etag: tag } });
 
   const o = c.org.id;
-  const [projects, stages, tasks, comments, files, events, invoices, activity, notifs, teams, views, favorites, members, invites] =
+  const [projects, stages, tasks, comments, files, events, invoices, activity, notifs, teams, views, favorites, members, invites, agreements] =
     await env.DB.batch<Row>([
       q("SELECT * FROM project WHERE org_id = ? ORDER BY ord, created_at", o),
       q("SELECT s.* FROM stage s JOIN project p ON p.id = s.project_id WHERE p.org_id = ? ORDER BY s.n", o),
@@ -443,6 +448,7 @@ async function snapshot(c: Ctx, req: Request) {
         o,
       ),
       q("SELECT id, email, name, role, created_at, expires_at FROM invite WHERE org_id = ? AND expires_at > ?", o, now()),
+      q("SELECT a.* FROM project_agreement a JOIN project p ON p.id = a.project_id WHERE p.org_id = ?", o),
     ]);
 
   // Projects: visible ones in full; private ones you're not on as locked stubs (gr8r shows them as locked cards).
@@ -483,6 +489,7 @@ async function snapshot(c: Ctx, req: Request) {
     notifs: notifs.results.map((r) => out("notif", r)),
     views: views.results.filter((r) => !r.project_id || perms.has(r.project_id)).map((r) => out("saved_view", r)),
     favorites: favorites.results,
+    agreements: agreements.results.filter(sees).map((r) => out("project_agreement", r)),
   };
   return Response.json(body, { headers: { etag: tag, "cache-control": "private, no-cache" } });
 }
@@ -615,6 +622,27 @@ async function setMember(me: Me, orgId: string, userId: string, body: Row | null
       ? q("UPDATE member SET role = ? WHERE org_id = ? AND user_id = ?", next, orgId, userId)
       : q("DELETE FROM member WHERE org_id = ? AND user_id = ?", orgId, userId),
     act(c, next ? "changed the role of" : "removed", {}, next ? `${target!.name} to ${next}` : target!.name),
+  ]);
+  return { ok: true };
+}
+
+async function removeStaff(me: Me, userId: string) {
+  if (!me.staff) fail(403, "Only StayonSite can remove staff");
+  const target = await first<{ id: string; email: string; role: string }>(
+    'SELECT id, email, role FROM "user" WHERE id = ? AND role = ?',
+    userId,
+    "staff",
+  );
+  if (!target) notFound();
+  if (target.id === me.id) fail(403, "You can't remove yourself");
+  const primary = (env as unknown as Record<string, string | undefined>).PRIMARY_STAFF_EMAIL?.trim().toLowerCase();
+  if (primary && target.email.toLowerCase() === primary) fail(403, "Primary StayonSite account can't be removed");
+  const count = await first<{ n: number }>('SELECT COUNT(*) AS n FROM "user" WHERE role = ?', "staff");
+  if ((count?.n ?? 0) <= 1) fail(403, "Can't remove the last StayonSite member");
+  await env.DB.batch([
+    q("DELETE FROM session WHERE userId = ?", userId),
+    q("DELETE FROM account WHERE userId = ?", userId),
+    q('DELETE FROM "user" WHERE id = ?', userId),
   ]);
   return { ok: true };
 }
@@ -1410,6 +1438,131 @@ async function readAll(me: Me, body: Row, req: Request) {
   return { ok: true };
 }
 
+/* ------------------------------------------------------------ agreements --- */
+
+async function loadAgreementRow(me: Me, projectId: string, req: Request) {
+  const { c, row } = await load(me, "project", projectId, req);
+  const existing = await first<Row>("SELECT * FROM project_agreement WHERE project_id = ?", projectId);
+  return { c, project: row, existing };
+}
+
+function normalizeMilestones(raw: unknown): PaymentMilestone[] {
+  if (!Array.isArray(raw) || !raw.length) bad("Add at least one payment milestone");
+  const list = raw as PaymentMilestone[];
+  const total = list.reduce((sum, m) => sum + Number(m.percent || 0), 0);
+  if (Math.round(total) !== 100) bad(`Milestone percentages must total 100% (currently ${total}%)`);
+  return list.map((m, i) => ({
+    id: typeof m.id === "string" && m.id ? m.id : `m${i + 1}`,
+    label: String(m.label || `Milestone ${i + 1}`).slice(0, 120),
+    trigger: (["contract_accepted", "customization_shown", "handover", "custom"].includes(m.trigger) ? m.trigger : "custom"),
+    triggerLabel: String(m.triggerLabel || "Upon milestone completion").slice(0, 160),
+    percent: Math.max(0, Math.min(100, Number(m.percent || 0))),
+    status: m.status === "paid" || m.status === "due" ? m.status : "locked",
+    paidAt: m.paidAt ?? null,
+    paidBy: m.paidBy ?? null,
+    paymentMethod: m.paymentMethod ?? null,
+  }));
+}
+
+async function saveAgreement(me: Me, projectId: string, body: Row, req: Request) {
+  const { c, existing } = await loadAgreementRow(me, projectId, req);
+  if (!canEditAgreement(c.v)) fail(403, "Only StayonSite staff can edit onboarding & payment terms");
+  const ptype = (["website", "mobile", "both"].includes(String(body.project_type)) ? body.project_type : "website") as ProjectType;
+  const totalCents = Math.max(0, Math.round(Number(body.total_cents ?? existing?.total_cents ?? 0)));
+  const milestones = body.milestones ? normalizeMilestones(body.milestones) : existing ? JSON.parse(String(existing.milestones)) : defaultMilestones();
+  const t = now();
+  const row = {
+    project_id: projectId,
+    client_name: String(body.client_name ?? existing?.client_name ?? "").slice(0, 160),
+    client_email: String(body.client_email ?? existing?.client_email ?? "").slice(0, 160),
+    client_company: String(body.client_company ?? existing?.client_company ?? "").slice(0, 160),
+    project_type: ptype,
+    scope_description: String(body.scope_description ?? existing?.scope_description ?? "").slice(0, 8000),
+    total_cents: totalCents,
+    currency: String(body.currency ?? existing?.currency ?? "USD").slice(0, 8),
+    contract_title: String(body.contract_title ?? existing?.contract_title ?? "").slice(0, 200),
+    contract_body: String(body.contract_body ?? existing?.contract_body ?? "").slice(0, 32000),
+    milestones: JSON.stringify(milestones),
+    updated_at: t,
+  };
+  const stmts: Stmt[] = existing
+    ? [
+        q(
+          `UPDATE project_agreement SET client_name=?, client_email=?, client_company=?, project_type=?, scope_description=?, total_cents=?, currency=?, contract_title=?, contract_body=?, milestones=?, updated_at=? WHERE project_id=?`,
+          row.client_name, row.client_email, row.client_company, row.project_type, row.scope_description, row.total_cents, row.currency, row.contract_title, row.contract_body, row.milestones, row.updated_at, projectId,
+        ),
+      ]
+    : [insert("project_agreement", row)];
+  stmts.push(act(c, "updated the project agreement for", { project_id: projectId }));
+  await commit(c, stmts);
+  return out("project_agreement", (await first("SELECT * FROM project_agreement WHERE project_id = ?", projectId))!);
+}
+
+async function acceptAgreement(me: Me, projectId: string, body: Row, req: Request) {
+  const { c, existing } = await loadAgreementRow(me, projectId, req);
+  if (!existing) bad("Save the project agreement before accepting");
+  const side = body.side === "company" ? "company" : body.side === "client" ? "client" : bad("Specify company or client side");
+  if (!canAcceptAgreementSide(c.v, side)) fail(403, side === "company" ? "Only StayonSite staff can accept for the company" : "Only client owners or admins can accept for the client");
+  const t = now();
+  const nextCompanyAt = side === "company" ? t : existing!.company_accepted_at;
+  const nextClientAt = side === "client" ? t : existing!.client_accepted_at;
+  const bothAccepted = !!nextCompanyAt && !!nextClientAt;
+  const milestones = JSON.parse(String(existing!.milestones)) as PaymentMilestone[];
+  if (bothAccepted) {
+    for (const ms of milestones) {
+      if (ms.trigger === "contract_accepted" && ms.status === "locked") ms.status = "due";
+    }
+  }
+  const col = side === "company" ? "company_accepted_by = ?, company_accepted_at = ?" : "client_accepted_by = ?, client_accepted_at = ?";
+  await commit(c, [
+    q(`UPDATE project_agreement SET ${col}, milestones = ?, updated_at = ? WHERE project_id = ?`, c.v.id, t, JSON.stringify(milestones), t, projectId),
+    act(c, `accepted the contract (${side}) on`, { project_id: projectId }),
+  ]);
+  return out("project_agreement", (await first("SELECT * FROM project_agreement WHERE project_id = ?", projectId))!);
+}
+
+async function triggerAgreementStage(me: Me, projectId: string, body: Row, req: Request) {
+  const { c, existing } = await loadAgreementRow(me, projectId, req);
+  if (!existing) bad("Agreement not found");
+  if (!canEditAgreement(c.v)) fail(403, "Only StayonSite staff can unlock project milestones");
+  const ev = body.event === "customization_shown" ? "customization_shown" : body.event === "handover_ready" ? "handover_ready" : bad("Unknown milestone event");
+  const t = now();
+  const milestones = JSON.parse(String(existing!.milestones)) as PaymentMilestone[];
+  const targetTrigger = ev === "customization_shown" ? "customization_shown" : "handover";
+  for (const ms of milestones) {
+    if (ms.trigger === targetTrigger && ms.status === "locked") ms.status = "due";
+  }
+  const col = ev === "customization_shown" ? "preview_shown_at = ?" : "handover_ready_at = ?";
+  await commit(c, [
+    q(`UPDATE project_agreement SET ${col}, milestones = ?, updated_at = ? WHERE project_id = ?`, t, JSON.stringify(milestones), t, projectId),
+    act(c, ev === "customization_shown" ? "marked customization shown on" : "marked ready for handover on", { project_id: projectId }),
+  ]);
+  return out("project_agreement", (await first("SELECT * FROM project_agreement WHERE project_id = ?", projectId))!);
+}
+
+async function payAgreementMilestone(me: Me, projectId: string, body: Row, req: Request) {
+  const { c, existing } = await loadAgreementRow(me, projectId, req);
+  if (!existing) bad("Agreement not found");
+  if (!canPayMilestone(c.v)) fail(403, "Only owners or admins can complete milestone payments");
+  const milestoneId = String(body.milestoneId ?? "");
+  const method = String(body.paymentMethod ?? "Card").slice(0, 60);
+  const milestones = JSON.parse(String(existing!.milestones)) as PaymentMilestone[];
+  const target = milestones.find((m) => m.id === milestoneId);
+  if (!target) bad("Milestone not found");
+  if (target!.status === "locked") bad("This milestone is not unlocked yet");
+  if (target!.status === "paid") bad("This milestone is already paid");
+  const t = now();
+  target!.status = "paid";
+  target!.paidAt = t;
+  target!.paidBy = c.v.id;
+  target!.paymentMethod = method;
+  await commit(c, [
+    q("UPDATE project_agreement SET milestones = ?, updated_at = ? WHERE project_id = ?", JSON.stringify(milestones), t, projectId),
+    act(c, `completed ${target!.percent}% payment (${target!.label}) on`, { project_id: projectId }),
+  ]);
+  return out("project_agreement", (await first("SELECT * FROM project_agreement WHERE project_id = ?", projectId))!);
+}
+
 /* ------------------------------------------------------------- router --- */
 
 export async function portal(req: Request): Promise<Response> {
@@ -1440,7 +1593,7 @@ export async function portal(req: Request): Promise<Response> {
   }
 
   async function route(): Promise<unknown> {
-    switch (`${m} ${resource}${a ? "/:id" : ""}${b ? `/${["decide", "advance", "request"].includes(b) ? b : ":id"}` : ""}`) {
+    switch (`${m} ${resource}${a ? "/:id" : ""}${b ? `/${["decide", "advance", "request", "accept", "milestone", "pay"].includes(b) ? b : ":id"}` : ""}`) {
       case "GET me": return { user, ...(await me(user)) };
       case "GET snapshot": return snapshot(await orgCtx(user, url.searchParams.get("org"), req), req);
 
@@ -1452,10 +1605,16 @@ export async function portal(req: Request): Promise<Response> {
       case "DELETE invite/:id": return revokeInvite(user, a, req);
       case "PATCH member/:id/:id": return setMember(user, a, b, await body(), req);
       case "DELETE member/:id/:id": return setMember(user, a, b, null, req);
+      case "DELETE staff/:id": return removeStaff(user, a);
 
       case "POST project": return createProject(user, await body(), req);
       case "PATCH project/:id": return patchProject(user, a, await body(), req);
       case "DELETE project/:id": return deleteProject(user, a, req);
+
+      case "PUT agreement/:id": return saveAgreement(user, a, await body(), req);
+      case "POST agreement/:id/accept": return acceptAgreement(user, a, await body(), req);
+      case "POST agreement/:id/milestone": return triggerAgreementStage(user, a, await body(), req);
+      case "POST agreement/:id/pay": return payAgreementMilestone(user, a, await body(), req);
 
       case "POST task": return createTask(user, await body(), req);
       case "PATCH task/:id": return patchTask(user, a, await body(), req);

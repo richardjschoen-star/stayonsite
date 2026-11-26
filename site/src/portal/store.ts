@@ -3,7 +3,7 @@ import { STATUSES } from "./constants";
 import { ApiError, api, upload } from "./api";
 import type {
   CalEvent, Comment, FileRow, Invoice, LockedProject, Me, OrgRef, Person, Project,
-  SavedView, Snapshot, Stage, Task, Team,
+  ProjectAgreement, SavedView, Snapshot, Stage, Task, Team,
 } from "./types";
 
 /**
@@ -268,6 +268,27 @@ export async function uploadFiles(files: File[], where: { project?: string | nul
 export const stageAction = (s: Stage, action: "request" | "advance" | "decide", body: Record<string, unknown> = {}) =>
   mutate(null, () => api<Stage>("POST", `stage/${s.id}/${action}`, body), (snap, r) => (r && "id" in r ? upsert(snap, "stage", r) : snap));
 
+function upsertAgreement(s: Snapshot, row: ProjectAgreement): Snapshot {
+  const list = s.agreements ?? [];
+  const i = list.findIndex((a) => a.project_id === row.project_id);
+  return { ...s, agreements: i < 0 ? [...list, row] : list.map((a, j) => (j === i ? row : a)) };
+}
+
+export const saveAgreement = (projectId: string, body: Record<string, unknown>) =>
+  mutate(null, () => api<ProjectAgreement>("PUT", `agreement/${projectId}`, body), upsertAgreement);
+
+export const acceptAgreement = (projectId: string, side: "company" | "client") =>
+  mutate(null, () => api<ProjectAgreement>("POST", `agreement/${projectId}/accept`, { side }), upsertAgreement);
+
+export const triggerAgreementStage = (projectId: string, event: "customization_shown" | "handover_ready") =>
+  mutate(null, () => api<ProjectAgreement>("POST", `agreement/${projectId}/milestone`, { event }), upsertAgreement);
+
+export const payAgreementMilestone = (projectId: string, milestoneId: string, paymentMethod: string) =>
+  mutate(null, () => api<ProjectAgreement>("POST", `agreement/${projectId}/pay`, { milestoneId, paymentMethod }), upsertAgreement);
+
+export const agreementOf = (s: Snapshot, projectId: string) =>
+  (s.agreements ?? []).find((a) => a.project_id === projectId) ?? null;
+
 export const invite = (email: string, role: string, name?: string, staff = false) =>
   mutate(null, () => api("POST", "invite", { org_id: staff ? null : orgId(), email, role, name }));
 
@@ -279,6 +300,9 @@ export const setMemberRole = (userId: string, role: string | null) =>
 
 export const revokeInvite = (id: string) =>
   mutate((s) => ({ ...s, invites: s.invites.filter((i) => i.id !== id) }), () => api("DELETE", `invite/${id}`));
+
+export const removeStaff = (userId: string) =>
+  mutate((s) => ({ ...s, people: s.people.filter((p) => p.id !== userId) }), () => api("DELETE", `staff/${userId}`));
 
 /* ---------------------------------------------------------- selectors --- */
 

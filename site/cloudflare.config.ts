@@ -23,7 +23,8 @@ export default defineConfig({
       "GOOGLE_CLIENT_SECRET": bindings.secret(),
       "MICROSOFT_CLIENT_ID": bindings.secret(),
       "MICROSOFT_CLIENT_SECRET": bindings.secret(),
-      "RESEND_API_KEY": bindings.secret()
+      "RESEND_API_KEY": bindings.secret(),
+      "PRIMARY_STAFF_EMAIL": bindings.secret()
     },
     "assets": {
       "notFoundHandling": "none",
