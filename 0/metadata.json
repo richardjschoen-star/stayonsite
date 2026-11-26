@@ -1,0 +1,44 @@
+{
+  "cli_version": "0.13.4",
+  "checkpoint_id": "01M8CHHFE9S0PFXFK7XWEF1KQY",
+  "session_id": "abeaccc8-73cd-40e4-873b-255c0296fb3a",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-26T18:23:01.799358Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "site/package-lock.json",
+    "site/package.json",
+    "site/src/portal/pages/project.tsx",
+    "site/worker/access.test.ts",
+    "site/worker/access.ts"
+  ],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "2c547544c8c4",
+  "session_token_usage": {
+    "input_tokens": 103481,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 473084,
+    "output_tokens": 6539,
+    "api_call_count": 18
+  },
+  "redaction": {
+    "replacements": 0,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 0,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "session_metrics": {
+    "turn_count": 1
+  }
+}
