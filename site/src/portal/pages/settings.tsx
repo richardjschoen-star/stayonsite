@@ -265,9 +265,13 @@ function Workspace({ s }: { s: Snapshot }) {
   const destroy = () =>
     confirm({ title: `Delete ${s.org.name}?`, body: "Every project, task, file, sign-off and invoice in it is deleted for everyone, including the files in storage. This can't be undone.", action: "Delete workspace", danger: true }).then(async (ok) => {
       if (!ok) return;
-      await api("DELETE", `org/${s.org.id}`).catch((e) => toast(e.message, { tone: "error" }));
-      await reloadOrgs();
-      location.href = "/console";
+      try {
+        await api("DELETE", `org/${s.org.id}`);
+        await reloadOrgs();
+        location.href = "/console";
+      } catch (e) {
+        toast((e as Error).message, { tone: "error" });
+      }
     });
   return (
     <>

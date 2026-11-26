@@ -529,6 +529,8 @@ async function patchOrg(me: Me, id: string, body: Row, req: Request) {
 async function deleteOrg(me: Me, id: string, req: Request) {
   const c = await orgCtx(me, id, req);
   if (!c.v.staff) fail(403, "Only StayonSite can remove a client");
+  const primary = (env as unknown as Record<string, string | undefined>).PRIMARY_STAFF_EMAIL?.trim().toLowerCase();
+  if (!primary || me.email.toLowerCase() !== primary) fail(403, "Only the primary StayonSite account can delete a client");
   // R2 first: once the rows are gone nothing points at the objects.
   let cursor: string | undefined;
   do {
