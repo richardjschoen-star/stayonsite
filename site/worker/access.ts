@@ -85,3 +85,16 @@ export const canDeleteComment = (
   c: { author_id: string },
   perm: Perm | null,
 ) => c.author_id === v.id || v.staff || perm === "full";
+
+/** Only StayonSite staff can edit onboarding details, contract text, and custom payment splits. */
+export const canEditAgreement = (v: Viewer) => v.staff;
+
+/** Both sides can accept their own side of the contract. */
+export function canAcceptAgreementSide(v: Viewer, side: "company" | "client") {
+  if (side === "company") return v.staff;
+  return !v.staff && (v.role === "owner" || v.role === "admin");
+}
+
+/** Client owners/admins (and staff for UI demo/verification) can complete unlocked milestone payments. */
+export const canPayMilestone = (v: Viewer) =>
+  v.staff || v.role === "owner" || v.role === "admin";

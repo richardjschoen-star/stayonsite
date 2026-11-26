@@ -2,8 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   atLeast,
+  canAcceptAgreementSide,
   canDecide,
   canDeleteComment,
+  canEditAgreement,
+  canPayMilestone,
   canSetRole,
   projectPerm,
   seesInvoice,
@@ -73,4 +76,18 @@ test("comments", () => {
   assert.ok(canDeleteComment(member, { author_id: "m" }, "comment"));
   assert.ok(!canDeleteComment(member, { author_id: "o" }, "comment"));
   assert.ok(canDeleteComment(owner, { author_id: "m" }, "full"));
+});
+
+test("agreements: staff edits, both sides accept their own side, owners/admins/staff pay", () => {
+  assert.ok(canEditAgreement(staff));
+  assert.ok(!canEditAgreement(owner));
+  assert.ok(canAcceptAgreementSide(staff, "company"));
+  assert.ok(!canAcceptAgreementSide(owner, "company"));
+  assert.ok(canAcceptAgreementSide(owner, "client"));
+  assert.ok(canAcceptAgreementSide(admin, "client"));
+  assert.ok(!canAcceptAgreementSide(member, "client"));
+  assert.ok(!canAcceptAgreementSide(staff, "client"));
+  assert.ok(canPayMilestone(owner));
+  assert.ok(canPayMilestone(admin));
+  assert.ok(!canPayMilestone(member));
 });

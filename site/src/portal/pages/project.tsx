@@ -13,6 +13,7 @@ import { canEdit, isFav, isOver, personOf, progressOf, projectOf, remove, save, 
 import type { Project, Snapshot } from "../types";
 import { AvatarStack, Card, Empty, PersonAvatar, ProjectIcon, ProjectStatusChip, StatusIcon, fmtDay, relDay } from "../ui";
 import { Board } from "../views/board";
+import { AgreementView } from "../views/agreement";
 import { Calendar } from "../views/calendar";
 import { Toolbar, applyView, useView } from "../views/engine";
 import { FilesView } from "../views/files";
@@ -25,6 +26,7 @@ import { RiLock2Fill } from "@remixicon/react";
 
 const TABS = [
   ["overview", "Overview"],
+  ["agreement", "Agreement & Pay"],
   ["process", "Process"],
   ["board", "Board"],
   ["list", "List"],
@@ -128,6 +130,7 @@ function Tab({ p, s, tab }: { p: Project; s: Snapshot; tab: string }) {
   const tasks = applyView(s, tasksOf(s, p.id), v);
 
   if (tab === "overview") return <OverviewTab p={p} s={s} />;
+  if (tab === "agreement") return <AgreementView p={p} />;
   if (tab === "process") return <ProcessView p={p} />;
   if (tab === "files") return <FilesView projectId={p.id} />;
   if (tab === "activity")
