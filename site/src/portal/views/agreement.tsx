@@ -321,7 +321,7 @@ function OnboardingWizard({
                   const Icon = opt.icon;
                   const selected = projectType === opt.id;
                   return (
-                    <motion.button
+                    <button
                       key={opt.id}
                       type="button"
                       whileTap={{ scale: 0.98 }}
@@ -340,7 +340,7 @@ function OnboardingWizard({
                         <p className="text-body-semibold text-text-primary">{opt.title}</p>
                         <p className="mt-0.5 text-caption-1-medium text-text-secondary">{opt.subtitle}</p>
                       </div>
-                    </motion.button>
+                    </button>
                   );
                 })}
               </div>
