@@ -17,6 +17,7 @@ export interface PaymentMilestone {
   paidAt: number | null;
   paidBy: string | null;
   paymentMethod: string | null;
+  invoiceId?: string | null;
 }
 
 export interface ProjectAgreement {

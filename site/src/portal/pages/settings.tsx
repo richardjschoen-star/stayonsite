@@ -386,11 +386,14 @@ function Billing({ s }: { s: Snapshot }) {
                       </td>
                       <td className="px-2">
                         <span className="flex justify-end gap-1">
-                          {i.file_id && (
-                            <a href={fileUrl(i.file_id, true)} aria-label={`Download ${i.number}`} className="rounded-lg p-1.5 text-foreground-icon-secondary hover:bg-background-secondary-hover">
-                              <RiDownload2Line className="size-4" aria-hidden />
-                            </a>
-                          )}
+                          <a
+                            href={i.file_id ? fileUrl(i.file_id, true) : `/api/portal/invoice/${i.id}/pdf`}
+                            download
+                            aria-label={`Download ${i.number}`}
+                            className="rounded-lg p-1.5 text-foreground-icon-secondary hover:bg-background-secondary-hover"
+                          >
+                            <RiDownload2Line className="size-4" aria-hidden />
+                          </a>
                           {s.viewer.staff && (
                             <>
                               {i.status === "sent" && (

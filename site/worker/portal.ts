@@ -1554,15 +1554,114 @@ async function payAgreementMilestone(me: Me, projectId: string, body: Row, req: 
   if (target!.status === "locked") bad("This milestone is not unlocked yet");
   if (target!.status === "paid") bad("This milestone is already paid");
   const t = now();
+  const invoiceId = uid();
+  const today = new Date(t).toISOString().slice(0, 10);
+  const invNumber = `SOS-${today.replace(/-/g, "")}-${invoiceId.slice(0, 4).toUpperCase()}`;
+  const amountCents = Math.round((Number(existing!.total_cents) * target!.percent) / 100);
   target!.status = "paid";
   target!.paidAt = t;
   target!.paidBy = c.v.id;
   target!.paymentMethod = method;
+  target!.invoiceId = invoiceId;
   await commit(c, [
     q("UPDATE project_agreement SET milestones = ?, updated_at = ? WHERE project_id = ?", JSON.stringify(milestones), t, projectId),
+    insert("invoice", {
+      id: invoiceId,
+      org_id: c.org.id,
+      project_id: projectId,
+      number: invNumber,
+      amount_cents: amountCents,
+      currency: String(existing!.currency || "USD"),
+      status: "paid",
+      issued: today,
+      due: today,
+      file_id: null,
+      note: `${target!.label} (${target!.percent}%) · Paid via ${method}`,
+      created_at: t,
+    }),
     act(c, `completed ${target!.percent}% payment (${target!.label}) on`, { project_id: projectId }),
   ]);
   return out("project_agreement", (await first("SELECT * FROM project_agreement WHERE project_id = ?", projectId))!);
+}
+
+function pdfEsc(s: string) {
+  return s.replace(/[^\x20-\x7e]/g, " ").replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+}
+
+function buildInvoicePdf(d: {
+  number: string;
+  orgName: string;
+  projectName: string;
+  issued: string;
+  due: string;
+  amount: string;
+  status: string;
+  note: string;
+}): Uint8Array {
+  const lines = [
+    "BT",
+    "/F2 20 Tf 56 750 Td (STAYONSITE) Tj",
+    "/F1 10 Tf 0 -18 Td (stayon.site  |  hello@stayon.site) Tj",
+    "/F2 16 Tf 0 -42 Td (INVOICE " + pdfEsc(d.number) + ") Tj",
+    "/F1 11 Tf 0 -28 Td (Status: " + pdfEsc(d.status.toUpperCase()) + ") Tj",
+    "0 -18 Td (Client: " + pdfEsc(d.orgName) + ") Tj",
+    "0 -18 Td (Project: " + pdfEsc(d.projectName) + ") Tj",
+    "0 -18 Td (Issued: " + pdfEsc(d.issued) + "    Due: " + pdfEsc(d.due) + ") Tj",
+    "0 -32 Td (--------------------------------------------------------------------) Tj",
+    "/F2 12 Tf 0 -22 Td (Description: " + pdfEsc(d.note || "Project Services") + ") Tj",
+    "/F2 14 Tf 0 -28 Td (Total Amount: " + pdfEsc(d.amount) + ") Tj",
+    "/F1 10 Tf 0 -36 Td (--------------------------------------------------------------------) Tj",
+    "0 -22 Td (Thank you for your business with StayonSite.) Tj",
+    "ET",
+  ].join("\n");
+  const objs = [
+    "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n",
+    "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n",
+    "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> >> endobj\n",
+    `4 0 obj << /Length ${lines.length} >>\nstream\n${lines}\nendstream\nendobj\n`,
+    "5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n",
+    "6 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> endobj\n",
+  ];
+  let pdf = "%PDF-1.4\n";
+  const offsets: number[] = [];
+  for (const o of objs) {
+    offsets.push(pdf.length);
+    pdf += o;
+  }
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n`;
+  for (const off of offsets) pdf += `${String(off).padStart(10, "0")} 00000 n \n`;
+  pdf += `trailer << /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return new TextEncoder().encode(pdf);
+}
+
+async function invoicePdf(me: Me, invoiceId: string, req: Request) {
+  const row = await first<Row>("SELECT * FROM invoice WHERE id = ?", invoiceId);
+  if (!row) notFound();
+  const c = await orgCtx(me, String(row.org_id), req);
+  if (!isOrgAdmin(c.v)) fail(403, "Only admins can download invoices");
+  const proj = row.project_id ? c.projects.find((p) => p.id === row.project_id) : null;
+  const cents = Number(row.amount_cents ?? 0);
+  const cur = String(row.currency || "USD");
+  const amount = `${cur} ${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const bytes = buildInvoicePdf({
+    number: String(row.number || "INVOICE"),
+    orgName: c.org.name,
+    projectName: proj ? String(proj.name) : "General",
+    issued: String(row.issued || "—"),
+    due: String(row.due || "—"),
+    amount,
+    status: String(row.status || "paid"),
+    note: String(row.note || ""),
+  });
+  const fname = `${String(row.number || "invoice").replace(/[^a-zA-Z0-9._-]/g, "_")}.pdf`;
+  return new Response(bytes as unknown as BodyInit, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="${fname}"`,
+      "Cache-Control": "private, max-age=60",
+    },
+  });
 }
 
 /* ------------------------------------------------------------- router --- */
@@ -1595,9 +1694,10 @@ export async function portal(req: Request): Promise<Response> {
   }
 
   async function route(): Promise<unknown> {
-    switch (`${m} ${resource}${a ? "/:id" : ""}${b ? `/${["decide", "advance", "request", "accept", "milestone", "pay"].includes(b) ? b : ":id"}` : ""}`) {
+    switch (`${m} ${resource}${a ? "/:id" : ""}${b ? `/${["decide", "advance", "request", "accept", "milestone", "pay", "pdf"].includes(b) ? b : ":id"}` : ""}`) {
       case "GET me": return { user, ...(await me(user)) };
       case "GET snapshot": return snapshot(await orgCtx(user, url.searchParams.get("org"), req), req);
+      case "GET invoice/:id/pdf": return invoicePdf(user, a, req);
 
       case "POST org": return createOrg(user, await body());
       case "PATCH org/:id": return patchOrg(user, a, await body(), req);

@@ -797,7 +797,18 @@ function LiveAgreement({
                   )}
 
                   {isPaid && ms.paidAt && (
-                    <p className="text-caption-1-medium text-text-tertiary">Paid on {fmtTime(ms.paidAt)}</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-caption-1-medium text-text-tertiary">Paid on {fmtTime(ms.paidAt)}</p>
+                      {ms.invoiceId && (
+                        <a
+                          href={`/api/portal/invoice/${ms.invoiceId}/pdf`}
+                          download
+                          className="text-caption-1-semibold text-accent-500 hover:underline"
+                        >
+                          Download Invoice PDF
+                        </a>
+                      )}
+                    </div>
                   )}
 
                   {/* Staff Stage Triggers for Milestone 2 & 3 */}
