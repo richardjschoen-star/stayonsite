@@ -1,0 +1,41 @@
+{
+  "cli_version": "0.13.4",
+  "checkpoint_id": "01M8C2Q4KC8Q9FJ4576GR1KEFW",
+  "session_id": "abeaccc8-73cd-40e4-873b-255c0296fb3a",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-26T14:03:59.341998Z",
+  "branch": "feat/client-console",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Antigravity",
+  "model": "",
+  "turn_id": "2c547544c8c4",
+  "token_usage": {
+    "input_tokens": 57107,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 240414,
+    "output_tokens": 3512,
+    "api_call_count": 9
+  },
+  "session_token_usage": {
+    "input_tokens": 95113,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 360940,
+    "output_tokens": 5155,
+    "api_call_count": 15
+  },
+  "redaction": {
+    "replacements": 0,
+    "layers": {
+      "betterleaks": 0,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 0,
+      "credentialed_uri": 0,
+      "entropy": 0,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  }
+}
