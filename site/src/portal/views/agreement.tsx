@@ -974,7 +974,7 @@ function CheckoutModal({
 
         {phase === "done" && (
           <div
-            key="done"}}
+            key="done"
             className="relative flex flex-col items-center justify-center gap-3 py-8 text-center"
           >
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
