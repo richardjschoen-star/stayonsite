@@ -68,7 +68,7 @@ export function Shell() {
         <Toasts />
       </Centered>
     );
-  if (loadError) return <Centered><Empty icon={RiLock2Line} title={loadError} action={<Button onClick={() => location.reload()}>Try again</Button>} /></Centered>;
+  if (loadError && !snap) return <Centered><Empty icon={RiLock2Line} title={loadError} action={<Button onClick={() => location.reload()}>Try again</Button>} /></Centered>;
   if (!snap || snap.org.id !== org.id) return <Loading />;
   return <Frame snap={snap} route={route} orgs={orgs} />;
 }

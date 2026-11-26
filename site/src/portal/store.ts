@@ -58,6 +58,8 @@ export const dismissToast = (id: number) => set({ toasts: state.toasts.filter((t
 let etag: string | null = null;
 let pending = 0;
 let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+let refreshAbort: AbortController | null = null;
+let refreshSeq = 0;
 
 export async function boot() {
   try {
@@ -82,15 +84,35 @@ export async function openOrg(orgId: string) {
 }
 
 /** Fetch the snapshot unless it's unchanged (304). Skipped while writes are in flight. */
-export async function refresh(orgId = state.snap?.org.id) {
+export async function refresh(orgId = state.snap?.org.id, retry = true): Promise<void> {
   if (!orgId || pending) return;
-  const res = await fetch(`/api/portal/snapshot?org=${orgId}`, { headers: etag ? { "if-none-match": etag } : {} }).catch(() => null);
-  if (!res) return;
+  refreshAbort?.abort();
+  const ctrl = (refreshAbort = new AbortController());
+  const seq = ++refreshSeq;
+  const res = await fetch(`/api/portal/snapshot?org=${orgId}`, {
+    signal: ctrl.signal,
+    headers: etag ? { "if-none-match": etag } : {},
+  }).catch(() => null);
+  if (seq !== refreshSeq || ctrl.signal.aborted) return;
+  if ((!res || res.status >= 500) && retry && !state.snap) {
+    await new Promise((r) => setTimeout(r, 400));
+    if (seq !== refreshSeq) return;
+    return refresh(orgId, false);
+  }
+  if (!res) {
+    if (!state.snap) set({ loadError: "The console couldn't load." });
+    return;
+  }
   if (res.status === 304) return;
   if (res.status === 401) return set({ me: null, snap: null });
-  if (!res.ok) return set({ loadError: res.status === 404 ? "You don't have access to this workspace." : "The console couldn't load." });
+  if (!res.ok) {
+    if (!state.snap || res.status === 404) {
+      set({ loadError: res.status === 404 ? "You don't have access to this workspace." : "The console couldn't load." });
+    }
+    return;
+  }
   const snap = (await res.json()) as Snapshot;
-  if (pending || (state.snap && state.snap.org.id !== orgId && state.snap.org.id !== snap.org.id)) return;
+  if (seq !== refreshSeq || pending || (state.snap && state.snap.org.id !== orgId && state.snap.org.id !== snap.org.id)) return;
   etag = res.headers.get("etag");
   set({ snap, loadError: null });
 }
