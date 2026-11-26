@@ -73,12 +73,20 @@ export function OrdersChartCard({
   data = ORDERS_DATA,
   title = "Orders",
   className,
+  currentLabel = "This year",
+  previousLabel = "Last year",
+  comparisonLabel = ["a year earlier", "last year"],
 }: {
   /** Twelve points, one per month; defaults to the demo year. */
   data?: OrdersPoint[];
   /** Headline label when no month is hovered. */
   title?: string;
   className?: string;
+  /** Legend names for the two series. */
+  currentLabel?: string;
+  previousLabel?: string;
+  /** Caption after the comparison figure: [hovering a point, the whole range]. */
+  comparisonLabel?: [string, string];
 } = {}) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -119,17 +127,17 @@ export function OrdersChartCard({
             </Chip>
           </div>
           <p className="text-body-2-medium text-text-tertiary tabular-nums">
-            {comparison.toLocaleString("en-US")} {point ? "a year earlier" : "last year"}
+            {comparison.toLocaleString("en-US")} {point ? comparisonLabel[0] : comparisonLabel[1]}
           </p>
         </div>
         <dl className="flex shrink-0 items-center gap-4 text-body-2-medium text-text-secondary">
           <div className="flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-chart-9-active" aria-hidden />
-            <dt>This year</dt>
+            <dt>{currentLabel}</dt>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="size-2 rounded-full bg-chart-neutral" aria-hidden />
-            <dt>Last year</dt>
+            <dt>{previousLabel}</dt>
           </div>
         </dl>
       </div>

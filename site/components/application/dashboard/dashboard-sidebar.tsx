@@ -61,7 +61,7 @@ type IconComponent = ComponentType<{
  * closes, and blurs back in on expand. The icons/rows themselves stay pinned in
  * place — only these label/badge slots animate — so nothing jumps to center.
  */
-function Collapsible({ collapsed, children, className }: { collapsed: boolean; children: ReactNode; className?: string }) {
+export function Collapsible({ collapsed, children, className }: { collapsed: boolean; children: ReactNode; className?: string }) {
   const localize = useTemplateCopy();
   return localize((
     <span
@@ -78,7 +78,8 @@ function Collapsible({ collapsed, children, className }: { collapsed: boolean; c
   ));
 }
 
-function NavItem({
+/** A sidebar row. Exported so apps with their own sections (the console) reuse it. */
+export function NavItem({
   icon: Icon,
   label,
   badge,
@@ -86,6 +87,7 @@ function NavItem({
   collapsed = false,
   href = "#",
   onClick,
+  leading,
 }: {
   icon: IconComponent;
   label: string;
@@ -95,6 +97,8 @@ function NavItem({
   href?: string;
   /** Action rows (e.g. Settings → modal) intercept the navigation. */
   onClick?: () => void;
+  /** Replaces the icon, e.g. a tinted project glyph. */
+  leading?: ReactNode;
 }) {
   const localize = useTemplateCopy();
   return localize((
@@ -103,6 +107,8 @@ function NavItem({
       onClick={
         onClick
           ? (event) => {
+              // Modified clicks still open the href in a new tab.
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
               event.preventDefault();
               onClick();
             }
@@ -121,10 +127,12 @@ function NavItem({
       )}
     >
       <span className="flex min-w-0 items-center gap-2">
-        <Icon
-          className={cx("size-5 shrink-0", isSelected ? "text-white" : "text-foreground-icon-secondary")}
-          aria-hidden
-        />
+        {leading ?? (
+          <Icon
+            className={cx("size-5 shrink-0", isSelected ? "text-white" : "text-foreground-icon-secondary")}
+            aria-hidden
+          />
+        )}
         <Collapsible collapsed={collapsed}>
           <span
             className={cx(
