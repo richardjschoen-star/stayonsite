@@ -129,7 +129,7 @@ export function AgreementView({ p }: { p: Project }) {
           </div>
         ) : saved ? (
           <div
-            key="live"}}}
+            key="live"
           >
             <LiveAgreement p={p} s={s} agreement={saved} onEdit={staff ? () => setEditing(true) : undefined} />
           </div>
@@ -305,7 +305,7 @@ function OnboardingWizard({
       {/* Step Content */}
               {step === 0 && (
           <div
-            key="step0"}}}
+            key="step0"
             className="flex flex-col gap-6 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
           >
             <div className="grid gap-4 sm:grid-cols-3">
@@ -379,7 +379,7 @@ function OnboardingWizard({
 
         {step === 1 && (
           <div
-            key="step1"}}}
+            key="step1"
             className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -426,7 +426,7 @@ function OnboardingWizard({
 
         {step === 2 && (
           <div
-            key="step2"}}}
+            key="step2"
             className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -645,7 +645,8 @@ function LiveAgreement({
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-background-tertiary-default">
             <div
-              className="h-full rounded-full bg-accent-500"}%` }}}
+              className="h-full rounded-full bg-accent-500"
+              style={{ width: `${paidPercent}%` }}
             />
           </div>
         </div>
@@ -896,7 +897,7 @@ function CheckoutModal({
     >
               {phase === "form" && (
           <div
-            key="form"}}}
+            key="form"
             className="flex flex-col gap-5"
           >
             {/* Order Summary */}
@@ -962,7 +963,7 @@ function CheckoutModal({
 
         {phase === "processing" && (
           <div
-            key="processing"}}}
+            key="processing"
             className="flex flex-col items-center justify-center gap-3 py-12 text-center"
           >
             <div className="size-10 animate-spin rounded-full border-3 border-accent-500/20 border-t-accent-500" />
