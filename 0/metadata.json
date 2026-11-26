@@ -1,0 +1,48 @@
+{
+  "cli_version": "0.13.4",
+  "checkpoint_id": "01M8CKC2YY56VE9MX2BKQAGQX8",
+  "session_id": "f15a2a40-241b-43a3-9d26-7c3d738a57f2",
+  "strategy": "manual-commit",
+  "created_at": "2026-11-26T18:55:02.570439Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "site/src/portal/views/agreement.tsx"
+  ],
+  "agent": "Antigravity",
+  "model": "gemini-4-hydrogen-low",
+  "turn_id": "5804656933f0",
+  "checkpoint_transcript_start": 366,
+  "transcript_lines_at_start": 366,
+  "token_usage": {
+    "input_tokens": 9707,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 502758,
+    "output_tokens": 423,
+    "api_call_count": 3
+  },
+  "session_token_usage": {
+    "input_tokens": 943147,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 13011804,
+    "output_tokens": 33784,
+    "api_call_count": 155
+  },
+  "redaction": {
+    "replacements": 10,
+    "layers": {
+      "betterleaks": 1,
+      "connection_string": 0,
+      "credential_key": 0,
+      "credential_value": 2,
+      "credentialed_uri": 0,
+      "entropy": 8,
+      "key_context": 0,
+      "provider_token": 0,
+      "shell_stdin": 0
+    }
+  },
+  "session_metrics": {
+    "turn_count": 51
+  }
+}
