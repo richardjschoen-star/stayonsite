@@ -1488,7 +1488,7 @@ async function saveAgreement(me: Me, projectId: string, body: Row, req: Request)
   const stmts: Stmt[] = existing
     ? [
         q(
-          `UPDATE project_agreement SET client_name=?, client_email=?, client_company=?, project_type=?, scope_description=?, total_cents=?, currency=?, contract_title=?, contract_body=?, milestones=?, updated_at=? WHERE project_id=?`,
+          `UPDATE project_agreement SET client_name=?, client_email=?, client_company=?, project_type=?, scope_description=?, total_cents=?, currency=?, contract_title=?, contract_body=?, milestones=?, company_accepted_by=NULL, company_accepted_name=NULL, company_accepted_at=NULL, client_accepted_by=NULL, client_accepted_name=NULL, client_accepted_at=NULL, client_accepted_ip=NULL, updated_at=? WHERE project_id=?`,
           row.client_name, row.client_email, row.client_company, row.project_type, row.scope_description, row.total_cents, row.currency, row.contract_title, row.contract_body, row.milestones, row.updated_at, projectId,
         ),
       ]

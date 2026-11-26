@@ -21,7 +21,6 @@ import {
   RiSmartphoneLine,
   RiSparklingLine,
 } from "@remixicon/react";
-import { AnimatePresence, motion } from "motion/react";
 import { useMemo, useState } from "react";
 import {
   buildContractTemplate,
@@ -109,7 +108,6 @@ export function AgreementView({ p }: { p: Project }) {
     return (
       <div className="px-4 sm:px-8">
         <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-border-button-default bg-background-secondary-default/40 px-6 py-16 text-center">
-          <ContractSealLottie className="size-16" />
           <div className="max-w-md space-y-1.5">
             <h2 className="text-title-2-medium text-text-primary">Onboarding & Contract Pending</h2>
             <p className="text-body-regular text-text-secondary">
@@ -123,30 +121,20 @@ export function AgreementView({ p }: { p: Project }) {
 
   return (
     <div className="px-4 pb-10 sm:px-8">
-      <AnimatePresence mode="wait">
-        {editing && staff ? (
-          <motion.div
-            key="wizard"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={SPRING}
+              {editing && staff ? (
+          <div
+            key="wizard"}}}
           >
             <OnboardingWizard p={p} s={s} existing={saved} onDone={() => setEditing(false)} onCancel={saved ? () => setEditing(false) : undefined} />
-          </motion.div>
+          </div>
         ) : saved ? (
-          <motion.div
-            key="live"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={SPRING}
+          <div
+            key="live"}}}
           >
             <LiveAgreement p={p} s={s} agreement={saved} onEdit={staff ? () => setEditing(true) : undefined} />
-          </motion.div>
+          </div>
         ) : null}
-      </AnimatePresence>
-    </div>
+          </div>
   );
 }
 
@@ -303,9 +291,8 @@ function OnboardingWizard({
               )}
             >
               {active && (
-                <motion.span
+                <span
                   layoutId="wizard-pill"
-                  transition={SPRING}
                   className="absolute inset-0 rounded-xl bg-background-primary-default shadow-xs"
                 />
               )}
@@ -316,14 +303,9 @@ function OnboardingWizard({
       </div>
 
       {/* Step Content */}
-      <AnimatePresence mode="wait">
-        {step === 0 && (
-          <motion.div
-            key="step0"
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 12 }}
-            transition={SPRING}
+              {step === 0 && (
+          <div
+            key="step0"}}}
             className="flex flex-col gap-6 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
           >
             <div className="grid gap-4 sm:grid-cols-3">
@@ -392,16 +374,12 @@ function OnboardingWizard({
                 Continue to Contract
               </Button>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {step === 1 && (
-          <motion.div
-            key="step1"
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 12 }}
-            transition={SPRING}
+          <div
+            key="step1"}}}
             className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -443,16 +421,12 @@ function OnboardingWizard({
               </Button>
               <Button onClick={() => setStep(2)}>Continue to Payment Schedule</Button>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {step === 2 && (
-          <motion.div
-            key="step2"
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 12 }}
-            transition={SPRING}
+          <div
+            key="step2"}}}
             className="flex flex-col gap-5 rounded-3xl border border-border-button-default bg-background-primary-default p-5 sm:p-6"
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -475,10 +449,9 @@ function OnboardingWizard({
               {milestones.map((ms, idx) => {
                 const amt = fmtAgreementMoney(Math.round((totalCents * ms.percent) / 100), currency);
                 return (
-                  <motion.div
+                  <div
                     key={ms.id}
                     layout
-                    transition={SPRING}
                     className="grid items-end gap-3 rounded-2xl border border-border-button-default bg-background-secondary-default/50 p-4 sm:grid-cols-[1.2fr_1.4fr_110px_110px_auto]"
                   >
                     <Input label={`Milestone ${idx + 1} Label`} value={ms.label} onChange={(label) => updateMilestone(idx, { label })} />
@@ -511,7 +484,7 @@ function OnboardingWizard({
                         <RiDeleteBinLine className="size-4" />
                       </button>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -555,10 +528,9 @@ function OnboardingWizard({
                 {busy ? "Saving..." : "Save & Publish Agreement"}
               </Button>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
+          </div>
   );
 }
 
@@ -629,7 +601,7 @@ function LiveAgreement({
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-6">
       {/* Apple-like Summary Hero */}
-      <motion.div
+      <div
         layout
         className="relative overflow-hidden rounded-3xl border border-border-button-default bg-background-primary-default p-6"
       >
@@ -672,15 +644,12 @@ function LiveAgreement({
             <span className="text-text-primary tabular-nums">{paidPercent}%</span>
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-background-tertiary-default">
-            <motion.div
-              className="h-full rounded-full bg-accent-500"
-              initial={{ width: 0 }}
-              animate={{ width: `${Math.min(100, paidPercent)}%` }}
-              transition={{ type: "spring", stiffness: 220, damping: 28 }}
+            <div
+              className="h-full rounded-full bg-accent-500"}%` }}}
             />
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Two-Column Layout: Contract + Dual Signatures | Milestones & Checkout */}
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -770,10 +739,9 @@ function LiveAgreement({
               const isPaid = ms.status === "paid";
               const isDue = ms.status === "due";
               return (
-                <motion.div
+                <div
                   key={ms.id}
                   layout
-                  transition={SPRING}
                   className={cx(
                     "flex flex-col gap-3 rounded-2xl border p-4 transition-colors",
                     isPaid
@@ -859,7 +827,7 @@ function LiveAgreement({
                       <RiLock2Line className="size-3.5" /> Unlocks after mutual contract acceptance
                     </p>
                   )}
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -926,14 +894,9 @@ function CheckoutModal({
         ) : undefined
       }
     >
-      <AnimatePresence mode="wait">
-        {phase === "form" && (
-          <motion.div
-            key="form"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={SPRING}
+              {phase === "form" && (
+          <div
+            key="form"}}}
             className="flex flex-col gap-5"
           >
             {/* Order Summary */}
@@ -964,7 +927,7 @@ function CheckoutModal({
                     onClick={() => setMethod(m.id)}
                     className={cx("relative flex flex-1 items-center justify-center gap-2 rounded-xl py-2 text-body-medium transition-colors", active ? "text-text-primary" : "text-text-secondary")}
                   >
-                    {active && <motion.span layoutId="pay-method" transition={SPRING} className="absolute inset-0 rounded-xl bg-background-primary-default shadow-xs" />}
+                    {active && <span layoutId="pay-method" className="absolute inset-0 rounded-xl bg-background-primary-default shadow-xs" />}
                     <Icon className="relative z-10 size-4" />
                     <span className="relative z-10">{m.label}</span>
                   </button>
@@ -994,29 +957,23 @@ function CheckoutModal({
             <p className="flex items-center justify-center gap-1.5 text-caption-1-medium text-text-tertiary">
               <RiShieldCheckLine className="size-4" /> UI Preview Mode — live payment gateway (Stripe) will connect here.
             </p>
-          </motion.div>
+          </div>
         )}
 
         {phase === "processing" && (
-          <motion.div
-            key="processing"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
+          <div
+            key="processing"}}}
             className="flex flex-col items-center justify-center gap-3 py-12 text-center"
           >
             <div className="size-10 animate-spin rounded-full border-3 border-accent-500/20 border-t-accent-500" />
             <p className="text-body-semibold text-text-primary">Authorizing {formatted}…</p>
             <p className="text-caption-1-medium text-text-secondary">Confirming milestone payment</p>
-          </motion.div>
+          </div>
         )}
 
         {phase === "done" && (
-          <motion.div
-            key="done"
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={SPRING}
+          <div
+            key="done"}}
             className="relative flex flex-col items-center justify-center gap-3 py-8 text-center"
           >
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -1027,9 +984,8 @@ function CheckoutModal({
             <p className="max-w-sm text-body-regular text-text-secondary">
               {milestone.label} ({milestone.percent}%) is now marked paid on {project.name}.
             </p>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </Sheet>
+          </Sheet>
   );
 }
