@@ -2,7 +2,8 @@ import { RiCheckLine, RiDownload2Line, RiPrinterLine, RiShieldCheckLine } from "
 import QRCode from "qrcode";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../../../components/base/buttons/button";
-import { api, forceRefresh, projectOf, toast } from "../store";
+import { api } from "../api";
+import { forceRefresh, projectOf, toast } from "../store";
 import type { Invoice, Snapshot } from "../types";
 import { fmtDay, fmtMoney } from "../ui";
 
