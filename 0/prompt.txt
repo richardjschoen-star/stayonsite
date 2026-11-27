@@ -1,0 +1,9 @@
+/ponytail ultra
+
+---
+
+why is the agreemnet and payment tab components has a space in left and right? use the full width  available like other tabs
+
+---
+
+commit this
