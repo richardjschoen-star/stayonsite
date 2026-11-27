@@ -13,6 +13,7 @@ import { navigate, to, useRoute } from "../router";
 import { forceRefresh, isAdmin, personOf, projectOf, reloadOrgs, save, toast, useSnap } from "../store";
 import type { Invoice, Snapshot } from "../types";
 import { Card, Empty, PageHeader, PersonAvatar, fmtDay, fmtMoney, timeAgo, tint } from "../ui";
+import { InvoiceSheetModal } from "../views/invoice-sheet";
 import { SHORTCUTS } from "../overlays/modals";
 import { Kbd } from "@/components/base/kbd/kbd";
 
@@ -333,12 +334,16 @@ const STATUS_TONE: Record<Invoice["status"] | "overdue", string> = {
 };
 
 function Billing({ s }: { s: Snapshot }) {
+  const route = useRoute();
+  const [viewId, setViewId] = useState<string | null>(() => route.query.get("invoice"));
+  const activeInvoice = viewId ? s.invoices.find((i) => i.id === viewId) ?? null : null;
   const today = new Date().toLocaleDateString("en-CA");
   const status = (i: Invoice) => (i.status === "sent" && i.due && i.due < today ? "overdue" : i.status);
   const outstanding = s.invoices.filter((i) => i.status === "sent");
   const byCurrency = outstanding.reduce<Record<string, number>>((m, i) => ((m[i.currency] = (m[i.currency] ?? 0) + i.amount_cents), m), {});
   return (
     <>
+      {activeInvoice && <InvoiceSheetModal s={s} invoice={activeInvoice} onClose={() => setViewId(null)} />}
       <Card
         title="Invoices"
         actions={
@@ -386,6 +391,9 @@ function Billing({ s }: { s: Snapshot }) {
                       </td>
                       <td className="px-2">
                         <span className="flex justify-end gap-1">
+                          <Button size="xs" variant="secondary" onClick={() => setViewId(i.id)}>
+                            View / PDF
+                          </Button>
                           <a
                             href={i.file_id ? fileUrl(i.file_id, true) : `/api/portal/invoice/${i.id}/pdf`}
                             download

@@ -33,6 +33,7 @@ import {
 } from "../../agreement";
 import { ContractEditor } from "../contract-editor";
 import { CelebrationLottie, ContractSealLottie, SuccessCheckLottie } from "../lottie";
+import { InvoiceSheetModal } from "./invoice-sheet";
 import { Sheet, openModal } from "../overlays/layer";
 import { Pick } from "../overlays/pickers";
 import {
@@ -551,6 +552,8 @@ function LiveAgreement({
   const clientAdmin = !staff && (s.viewer.role === "owner" || s.viewer.role === "admin");
   const [busy, setBusy] = useState<string | null>(null);
   const [justCelebrated, setJustCelebrated] = useState(false);
+  const [viewInvoiceId, setViewInvoiceId] = useState<string | null>(null);
+  const activeInvoice = viewInvoiceId ? s.invoices.find((i) => i.id === viewInvoiceId) ?? null : null;
 
   const bothAccepted = !!agreement.company_accepted_at && !!agreement.client_accepted_at;
   const totalPaidCents = agreement.milestones.reduce(
@@ -800,13 +803,13 @@ function LiveAgreement({
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-caption-1-medium text-text-tertiary">Paid on {fmtTime(ms.paidAt)}</p>
                       {ms.invoiceId && (
-                        <a
-                          href={`/api/portal/invoice/${ms.invoiceId}/pdf`}
-                          download
+                        <button
+                          type="button"
+                          onClick={() => setViewInvoiceId(ms.invoiceId!)}
                           className="text-caption-1-semibold text-accent-500 hover:underline"
                         >
-                          Download Invoice PDF
-                        </a>
+                          View / Download Invoice
+                        </button>
                       )}
                     </div>
                   )}
@@ -845,6 +848,7 @@ function LiveAgreement({
           </div>
         </div>
       </div>
+      {activeInvoice && <InvoiceSheetModal s={s} invoice={activeInvoice} onClose={() => setViewInvoiceId(null)} />}
     </div>
   );
 }

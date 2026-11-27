@@ -1756,6 +1756,27 @@ async function invoicePdf(me: Me, invoiceId: string, req: Request) {
   });
 }
 
+async function authorizeInvoice(me: Me, invoiceId: string, req: Request) {
+  if (!me.staff) fail(403, "Only StayonSite staff can authorize invoices");
+  const row = await first<Row>("SELECT * FROM invoice WHERE id = ?", invoiceId);
+  if (!row) notFound();
+  const c = await orgCtx(me, String(row.org_id), req);
+  const u = await first<{ name: string; title: string | null }>('SELECT name, title FROM "user" WHERE id = ?', me.id);
+  const t = now();
+  await commit(c, [
+    q(
+      "UPDATE invoice SET authorized_by = ?, authorized_name = ?, authorized_title = ?, authorized_at = ? WHERE id = ?",
+      me.id,
+      u?.name || me.name,
+      u?.title || "Authorized Signatory",
+      t,
+      invoiceId,
+    ),
+    act(c, "authorized invoice", {}, String(row.number || invoiceId)),
+  ]);
+  return { ok: true };
+}
+
 /* ------------------------------------------------------------- router --- */
 
 export async function portal(req: Request): Promise<Response> {
@@ -1786,10 +1807,11 @@ export async function portal(req: Request): Promise<Response> {
   }
 
   async function route(): Promise<unknown> {
-    switch (`${m} ${resource}${a ? "/:id" : ""}${b ? `/${["decide", "advance", "request", "accept", "milestone", "pay", "pdf"].includes(b) ? b : ":id"}` : ""}`) {
+    switch (`${m} ${resource}${a ? "/:id" : ""}${b ? `/${["decide", "advance", "request", "accept", "milestone", "pay", "pdf", "authorize"].includes(b) ? b : ":id"}` : ""}`) {
       case "GET me": return { user, ...(await me(user)) };
       case "GET snapshot": return snapshot(await orgCtx(user, url.searchParams.get("org"), req), req);
       case "GET invoice/:id/pdf": return invoicePdf(user, a, req);
+      case "POST invoice/:id/authorize": return authorizeInvoice(user, a, req);
 
       case "POST org": return createOrg(user, await body());
       case "PATCH org/:id": return patchOrg(user, a, await body(), req);

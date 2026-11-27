@@ -201,6 +201,10 @@ export interface Invoice {
   due: string | null;
   file_id: string | null;
   note: string;
+  authorized_by?: string | null;
+  authorized_name?: string | null;
+  authorized_title?: string | null;
+  authorized_at?: number | null;
   created_at: number;
 }
 
