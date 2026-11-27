@@ -272,7 +272,7 @@ function OnboardingWizard({
   ];
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       {/* Apple-style Segmented Stepper */}
       <div className="flex gap-1.5 rounded-2xl border border-border-button-default bg-background-secondary-default p-1.5">
         {STEPS.map((st) => {
@@ -599,7 +599,7 @@ function LiveAgreement({
   const typeLabel = TYPE_OPTIONS.find((t) => t.id === agreement.project_type)?.title ?? "Website";
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       {/* Apple-like Summary Hero */}
       <div
         layout
